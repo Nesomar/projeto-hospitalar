@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; font-family: 'Manrope', sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: oklch(55% 0.14 258); text-decoration: none; }
+    a:hover { color: oklch(45% 0.15 258); text-decoration: underline; }
+    input, select, textarea, button { font-family: 'Manrope', sans-serif; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid oklch(80% 0.06 258); }
+    ::placeholder { color: oklch(68% 0.01 258); }
+  </style>
+</helmet>
+<div style="width:100vw;height:100vh;background:oklch(97% 0.006 258);display:flex;overflow:hidden;color:oklch(24% 0.02 258);box-sizing:border-box;">
+
+  <sc-if value="{{ isLoginScreen }}" hint-placeholder-val="{{ true }}">
+    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+      <div style="width:400px;background:#ffffff;border-radius:24px;padding:40px 36px;box-shadow:0 20px 50px -20px oklch(20% 0.02 258 / 0.18);display:flex;flex-direction:column;gap:20px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;">
+          <div style="width:56px;height:56px;border-radius:16px;background:{{ acento }};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px;">UN</div>
+          <div>
+            <div style="font-size:19px;font-weight:800;">UPA Nordeste</div>
+            <div style="font-size:13px;color:oklch(50% 0.018 258);margin-top:2px;">Hospital das Clínicas · Sistema de Atendimento</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Usuário (LDAP/AD)</label>
+            <input type="text" value="{{ loginUsuario }}" onChange="{{ onLoginUsuarioChange }}" placeholder="ex: c.nunes" style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Senha</label>
+            <input type="password" value="{{ loginSenha }}" onChange="{{ onLoginSenhaChange }}" placeholder="••••••••" style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Perfil (demonstração)</label>
+            <select value="{{ loginPerfil }}" onChange="{{ onLoginPerfilChange }}" style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;background:#fff;box-sizing:border-box;">
+              <option value="enfermeiro">Enfermeiro(a)</option>
+              <option value="medico">Médico(a)</option>
+            </select>
+          </div>
+          <button onClick="{{ onLoginSubmit }}" style="margin-top:6px;border:none;background:{{ acento }};color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">Entrar via LDAP/AD</button>
+        </div>
+        <div style="text-align:center;font-size:11px;color:oklch(58% 0.015 258);">Autenticação integrada ao Active Directory institucional (RF001).</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLoggedIn }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;width:100%;height:100%;">
+
+      <div style="width:236px;flex-shrink:0;background:#ffffff;border-right:1px solid oklch(90% 0.012 258);display:flex;flex-direction:column;padding:24px 16px;gap:4px;box-sizing:border-box;">
+        <div style="display:flex;align-items:center;gap:10px;padding:0 8px 24px 8px;">
+          <div style="width:38px;height:38px;border-radius:12px;background:{{ acento }};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex-shrink:0;">UN</div>
+          <div style="display:flex;flex-direction:column;">
+            <div style="font-weight:800;font-size:14px;line-height:1.2;">UPA Nordeste</div>
+            <div style="font-size:11px;color:oklch(50% 0.018 258);">Sistema Hospitalar</div>
+          </div>
+        </div>
+        <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="4">
+          <button onClick="{{ item.onClick }}" style="{{ item.style }}">{{ item.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="flex:1;display:flex;flex-direction:column;height:100%;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid oklch(90% 0.012 258);background:#ffffff;flex-shrink:0;">
+          <div>
+            <div style="font-size:20px;font-weight:800;">{{ screenTitle }}</div>
+            <div style="font-size:13px;color:oklch(50% 0.018 258);margin-top:2px;">{{ screenSubtitle }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="display:flex;background:oklch(96% 0.008 258);border-radius:999px;padding:4px;gap:2px;">
+              <button onClick="{{ onSetRoleEnfermeiro }}" style="{{ roleBtnEnfermeiroStyle }}">Enfermeiro</button>
+              <button onClick="{{ onSetRoleMedico }}" style="{{ roleBtnMedicoStyle }}">Médico</button>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;">
+              <div style="font-size:13px;font-weight:700;">{{ staffName }}</div>
+              <div style="font-size:11px;color:oklch(50% 0.018 258);">{{ staffRegistro }}</div>
+            </div>
+            <button onClick="{{ onLogout }}" style="border:1px solid oklch(88% 0.012 258);background:#fff;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:600;color:oklch(40% 0.02 258);cursor:pointer;">Sair</button>
+          </div>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding:28px 32px;box-sizing:border-box;">
+
+          <sc-if value="{{ screenIsPainel }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:20px;">
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <sc-for list="{{ filtrosCores }}" as="f" hint-placeholder-count="6">
+                  <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <sc-for list="{{ painelPatients }}" as="p" hint-placeholder-count="4">
+                  <div style="{{ p.rowStyle }}">
+                    <div style="{{ p.classBadgeStyle }}">{{ p.classLabelShort }}</div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
+                      <div style="font-size:15px;font-weight:700;">{{ p.nome }}</div>
+                      <div style="font-size:12px;color:oklch(50% 0.018 258);">{{ p.idade }} anos · CPF {{ p.cpfFmt }} · Chegada {{ p.chegada }}</div>
+                    </div>
+                    <div style="{{ p.statusStyle }}">{{ p.status }}</div>
+                    <div style="display:flex;gap:8px;">
+                      <sc-if value="{{ p.showTriagemBtn }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ p.onTriagem }}" style="border:none;background:{{ acento }};color:#fff;padding:9px 14px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">Fazer Triagem</button>
+                      </sc-if>
+                      <button onClick="{{ p.onVer }}" style="border:1px solid oklch(88% 0.012 258);background:#fff;padding:9px 14px;border-radius:10px;font-size:12.5px;font-weight:700;color:oklch(40% 0.02 258);cursor:pointer;white-space:nowrap;">Ver Prontuário</button>
+                    </div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ painelVazio }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:40px;text-align:center;color:oklch(55% 0.015 258);font-size:14px;">Nenhum paciente nesta classificação.</div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ mostrarLegenda }}" hint-placeholder-val="{{ true }}">
+                <div style="margin-top:8px;padding:18px 20px;background:#ffffff;border:1px solid oklch(90% 0.012 258);border-radius:16px;">
+                  <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Protocolo de Manchester</div>
+                  <div style="display:flex;gap:18px;flex-wrap:wrap;">
+                    <sc-for list="{{ legendaItems }}" as="l" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:oklch(45% 0.018 258);">
+                        <span style="{{ l.dotStyle }}"></span>{{ l.label }} · {{ l.tempo }}
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ screenIsCadastro }}" hint-placeholder-val="{{ false }}">
+            <div style="max-width:640px;background:#fff;border-radius:20px;border:1px solid oklch(90% 0.012 258);padding:28px 32px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;">
+              <div style="font-size:15px;font-weight:700;">Dados do Paciente</div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Nome completo</label>
+                <input type="text" value="{{ cadastroForm.nome }}" onChange="{{ onCadastroNomeChange }}" placeholder="Nome completo do paciente" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+              </div>
+              <div style="display:flex;gap:16px;">
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">CPF (11 dígitos)</label>
+                  <input type="text" value="{{ cadastroForm.cpf }}" onChange="{{ onCadastroCpfChange }}" placeholder="00000000000" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;font-family:ui-monospace,monospace;box-sizing:border-box;" />
+                  <sc-if value="{{ cadastroErroCpf }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:#D62839;">CPF deve ter 11 dígitos numéricos.</div></sc-if>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">CNS (15 dígitos)</label>
+                  <input type="text" value="{{ cadastroForm.cns }}" onChange="{{ onCadastroCnsChange }}" placeholder="000000000000000" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;font-family:ui-monospace,monospace;box-sizing:border-box;" />
+                  <sc-if value="{{ cadastroErroCns }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:#D62839;">CNS deve ter 15 dígitos numéricos.</div></sc-if>
+                </div>
+              </div>
+              <div style="display:flex;gap:16px;">
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Data de nascimento</label>
+                  <input type="date" value="{{ cadastroForm.nascimento }}" onChange="{{ onCadastroNascimentoChange }}" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Sexo</label>
+                  <select value="{{ cadastroForm.sexo }}" onChange="{{ onCadastroSexoChange }}" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;background:#fff;box-sizing:border-box;">
+                    <option value="F">Feminino</option>
+                    <option value="M">Masculino</option>
+                    <option value="O">Outro</option>
+                  </select>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Telefone</label>
+                  <input type="text" value="{{ cadastroForm.telefone }}" onChange="{{ onCadastroTelefoneChange }}" placeholder="(00) 00000-0000" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+                </div>
+              </div>
+              <button onClick="{{ onCadastroSubmit }}" style="margin-top:6px;align-self:flex-start;border:none;background:{{ acento }};color:#fff;padding:12px 22px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">Cadastrar Paciente</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ screenIsTriagem }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ triagemSemPaciente }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="font-size:14px;color:oklch(50% 0.018 258);">Selecione um paciente aguardando triagem:</div>
+                <sc-for list="{{ patientsAguardandoTriagem }}" as="p" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:16px;background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:14px;padding:16px 20px;">
+                    <div style="flex:1;">
+                      <div style="font-size:14.5px;font-weight:700;">{{ p.nome }}</div>
+                      <div style="font-size:12px;color:oklch(50% 0.018 258);">{{ p.idade }} anos · Chegada {{ p.chegada }}</div>
+                    </div>
+                    <button onClick="{{ p.onSelecionar }}" style="border:none;background:{{ acento }};color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">Selecionar</button>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ triagemListaVazia }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:40px;text-align:center;color:oklch(55% 0.015 258);font-size:14px;">Nenhum paciente aguardando triagem.</div>
+                </sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ triagemComPaciente }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+                <div style="flex:2 1 380px;max-width:520px;min-width:0;background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:20px;padding:26px 30px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box;">
+                  <div>
+                    <div style="font-size:16px;font-weight:800;">{{ triagemPacienteNome }}</div>
+                    <div style="font-size:12px;color:oklch(50% 0.018 258);">{{ triagemPacienteIdade }} anos</div>
+                  </div>
+                  <div style="display:flex;gap:14px;">
+                    <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+                      <label style="font-size:12px;font-weight:700;">PA sistólica / diastólica</label>
+                      <div style="display:flex;gap:8px;">
+                        <input type="number" value="{{ triagemForm.pas }}" onChange="{{ onTriagemPasChange }}" placeholder="120" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:10px;padding:9px 10px;font-size:13px;box-sizing:border-box;" />
+                        <input type="number" value="{{ triagemForm.pad }}" onChange="{{ onTriagemPadChange }}" placeholder="80" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:10px;padding:9px 10px;font-size:13px;box-sizing:border-box;" />
+                      </div>
+                    </div>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                      <label style="font-size:12px;font-weight:700;">FC (bpm)</label>
+                      <input type="number" value="{{ triagemForm.fc }}" onChange="{{ onTriagemFcChange }}" placeholder="80" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:10px;padding:9px 10px;font-size:13px;box-sizing:border-box;" />
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:14px;">
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                      <label style="font-size:12px;font-weight:700;">FR (irpm)</label>
+                      <input type="number" value="{{ triagemForm.fr }}" onChange="{{ onTriagemFrChange }}" placeholder="16" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:10px;padding:9px 10px;font-size:13px;box-sizing:border-box;" />
+                    </div>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                      <label style="font-size:12px;font-weight:700;">Temperatura (°C)</label>
+                      <input type="number" value="{{ triagemForm.temp }}" onChange="{{ onTriagemTempChange }}" placeholder="36.5" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:10px;padding:9px 10px;font-size:13px;box-sizing:border-box;" />
+                    </div>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                      <label style="font-size:12px;font-weight:700;">SpO2 (%)</label>
+                      <input type="number" value="{{ triagemForm.spo2 }}" onChange="{{ onTriagemSpo2Change }}" placeholder="97" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:10px;padding:9px 10px;font-size:13px;box-sizing:border-box;" />
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="font-size:12px;font-weight:700;">Dor (0-10)</label>
+                    <input type="range" min="0" max="10" value="{{ triagemForm.dor }}" onChange="{{ onTriagemDorChange }}" style="width:100%;" />
+                    <div style="font-size:12px;color:oklch(50% 0.018 258);">Nível: {{ triagemForm.dor }}</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="font-size:12px;font-weight:700;">Queixa principal</label>
+                    <textarea value="{{ triagemForm.queixa }}" onChange="{{ onTriagemQueixaChange }}" placeholder="Descreva a queixa..." style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:13px;min-height:70px;resize:vertical;box-sizing:border-box;"></textarea>
+                  </div>
+                  <div style="display:flex;gap:10px;margin-top:4px;">
+                    <button onClick="{{ onCalcularTriagem }}" style="{{ calcularBtnStyle }}">Calcular Classificação</button>
+                    <button onClick="{{ onCancelarTriagem }}" style="border:1px solid oklch(88% 0.012 258);background:#fff;padding:11px 18px;border-radius:12px;font-size:13.5px;font-weight:700;color:oklch(40% 0.02 258);cursor:pointer;">Cancelar</button>
+                  </div>
+                </div>
+                <div style="flex:1 1 260px;min-width:260px;max-width:340px;display:flex;flex-direction:column;gap:14px;">
+                  <sc-if value="{{ triagemTemResultado }}" hint-placeholder-val="{{ false }}">
+                    <div style="{{ triagemResultadoCardStyle }}">
+                      <div style="font-size:13px;font-weight:700;opacity:0.85;">Classificação de Risco</div>
+                      <div style="font-size:22px;font-weight:800;margin-top:4px;">{{ triagemResultadoLabel }}</div>
+                      <div style="font-size:13px;margin-top:2px;">Meta de atendimento: {{ triagemResultadoTempo }}</div>
+                      <div style="font-size:12.5px;margin-top:10px;opacity:0.9;line-height:1.5;">{{ triagemResultadoJustificativa }}</div>
+                    </div>
+                    <button onClick="{{ onConfirmarTriagem }}" style="border:none;background:{{ acento }};color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">Confirmar Triagem</button>
+                  </sc-if>
+                  <sc-if value="{{ triagemSemResultado }}" hint-placeholder-val="{{ true }}">
+                    <div style="background:oklch(96% 0.008 258);border-radius:16px;padding:20px;font-size:13px;color:oklch(50% 0.018 258);line-height:1.6;box-sizing:border-box;">Preencha os sinais vitais e clique em "Calcular Classificação" para obter a cor de risco segundo o Protocolo de Manchester.</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ screenIsProntuario }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ prontuarioSemPaciente }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="font-size:14px;color:oklch(50% 0.018 258);">Selecione um paciente:</div>
+                <sc-for list="{{ todosPacientes }}" as="p" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:16px;background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:14px;padding:14px 20px;">
+                    <div style="{{ p.classDotStyle }}"></div>
+                    <div style="flex:1;">
+                      <div style="font-size:14px;font-weight:700;">{{ p.nome }}</div>
+                      <div style="font-size:12px;color:oklch(50% 0.018 258);">{{ p.idade }} anos · {{ p.status }}</div>
+                    </div>
+                    <button onClick="{{ p.onAbrir }}" style="border:1px solid oklch(88% 0.012 258);background:#fff;padding:8px 14px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;">Abrir</button>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ prontuarioComPaciente }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:20px;">
+                <div style="background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:20px;padding:24px 28px;box-sizing:border-box;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div>
+                      <div style="font-size:19px;font-weight:800;">{{ prontuarioNome }}</div>
+                      <div style="font-size:12.5px;color:oklch(50% 0.018 258);margin-top:4px;">{{ prontuarioIdade }} anos · CPF {{ prontuarioCpf }} · CNS {{ prontuarioCns }}</div>
+                    </div>
+                    <div style="{{ prontuarioClassBadgeStyle }}">{{ prontuarioClassLabel }}</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:20px;">
+                    <sc-for list="{{ prontuarioVitais }}" as="v" hint-placeholder-count="6">
+                      <div style="background:oklch(97% 0.006 258);border-radius:12px;padding:10px 12px;">
+                        <div style="font-size:10.5px;color:oklch(55% 0.015 258);font-weight:700;text-transform:uppercase;letter-spacing:0.03em;">{{ v.label }}</div>
+                        <div style="font-size:16px;font-weight:800;margin-top:2px;">{{ v.value }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:20px;padding:24px 28px;box-sizing:border-box;">
+                  <div style="font-size:14px;font-weight:700;margin-bottom:14px;">Evolução</div>
+                  <div style="display:flex;flex-direction:column;gap:0;">
+                    <sc-for list="{{ prontuarioEvolucoes }}" as="e" hint-placeholder-count="2">
+                      <div style="display:flex;gap:14px;padding-bottom:18px;border-left:2px solid oklch(90% 0.012 258);margin-left:4px;padding-left:18px;position:relative;">
+                        <div style="position:absolute;left:-6px;top:2px;width:10px;height:10px;border-radius:50%;background:{{ acento }};"></div>
+                        <div>
+                          <div style="font-size:12px;color:oklch(50% 0.018 258);">{{ e.data }} · {{ e.responsavel }}</div>
+                          <div style="font-size:11.5px;font-weight:700;color:oklch(45% 0.02 258);margin-top:2px;">{{ e.tipo }}</div>
+                          <div style="font-size:13px;margin-top:4px;line-height:1.5;">{{ e.descricao }}</div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:20px;padding:24px 28px;box-sizing:border-box;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <div style="font-size:14px;font-weight:700;">Prescrições</div>
+                    <sc-if value="{{ podeNovaPrescricao }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ onNovaPrescricao }}" style="border:none;background:{{ acento }};color:#fff;padding:9px 16px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;">+ Nova Prescrição</button>
+                    </sc-if>
+                  </div>
+                  <sc-for list="{{ prontuarioPrescricoes }}" as="rx" hint-placeholder-count="1">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid oklch(94% 0.008 258);">
+                      <div>
+                        <div style="font-size:13.5px;font-weight:700;">{{ rx.medicamento }} — {{ rx.dosagem }}</div>
+                        <div style="font-size:12px;color:oklch(50% 0.018 258);margin-top:2px;">{{ rx.via }} · {{ rx.frequencia }} · {{ rx.data }} · {{ rx.medico }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ prontuarioSemPrescricao }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:13px;color:oklch(55% 0.015 258);padding:8px 0;">Nenhuma prescrição registrada.</div>
+                  </sc-if>
+                </div>
+                <button onClick="{{ onVoltarPainel }}" style="align-self:flex-start;border:1px solid oklch(88% 0.012 258);background:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;color:oklch(40% 0.02 258);cursor:pointer;">← Voltar ao Painel</button>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ screenIsPrescricao }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ prescricaoSemPaciente }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="font-size:14px;color:oklch(50% 0.018 258);">Selecione um paciente para prescrever:</div>
+                <sc-for list="{{ todosPacientes }}" as="p" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:16px;background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:14px;padding:14px 20px;">
+                    <div style="{{ p.classDotStyle }}"></div>
+                    <div style="flex:1;">
+                      <div style="font-size:14px;font-weight:700;">{{ p.nome }}</div>
+                      <div style="font-size:12px;color:oklch(50% 0.018 258);">{{ p.idade }} anos · {{ p.status }}</div>
+                    </div>
+                    <button onClick="{{ p.onPrescrever }}" style="border:1px solid oklch(88% 0.012 258);background:#fff;padding:8px 14px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;">Selecionar</button>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ prescricaoComPaciente }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+                <div style="flex:2 1 380px;max-width:520px;min-width:0;background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:20px;padding:26px 30px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box;">
+                  <div>
+                    <div style="font-size:16px;font-weight:800;">{{ prescricaoPacienteNome }}</div>
+                    <div style="font-size:12px;color:oklch(50% 0.018 258);">Prescrito por {{ staffName }} · {{ staffRegistro }}</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="font-size:12px;font-weight:700;">Medicamento</label>
+                    <input type="text" value="{{ prescricaoForm.medicamento }}" onChange="{{ onPrescricaoMedicamentoChange }}" placeholder="ex: Dipirona" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+                  </div>
+                  <div style="display:flex;gap:14px;">
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                      <label style="font-size:12px;font-weight:700;">Dosagem</label>
+                      <input type="text" value="{{ prescricaoForm.dosagem }}" onChange="{{ onPrescricaoDosagemChange }}" placeholder="500mg" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+                    </div>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                      <label style="font-size:12px;font-weight:700;">Via</label>
+                      <select value="{{ prescricaoForm.via }}" onChange="{{ onPrescricaoViaChange }}" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;background:#fff;box-sizing:border-box;">
+                        <option value="Oral">Oral</option>
+                        <option value="IV">Endovenosa</option>
+                        <option value="IM">Intramuscular</option>
+                        <option value="SC">Subcutânea</option>
+                        <option value="Tópica">Tópica</option>
+                      </select>
+                    </div>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                      <label style="font-size:12px;font-weight:700;">Frequência</label>
+                      <input type="text" value="{{ prescricaoForm.frequencia }}" onChange="{{ onPrescricaoFrequenciaChange }}" placeholder="8/8h" style="width:100%;border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="font-size:12px;font-weight:700;">Observações</label>
+                    <textarea value="{{ prescricaoForm.obs }}" onChange="{{ onPrescricaoObsChange }}" placeholder="Observações adicionais..." style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:13px;min-height:70px;resize:vertical;box-sizing:border-box;"></textarea>
+                  </div>
+                  <button onClick="{{ onPrescricaoSubmit }}" style="border:none;background:{{ acento }};color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">Salvar Prescrição</button>
+                </div>
+                <div style="flex:1 1 260px;min-width:260px;max-width:340px;display:flex;flex-direction:column;gap:10px;">
+                  <div style="font-size:13px;font-weight:700;color:oklch(45% 0.018 258);">Prescrições anteriores</div>
+                  <sc-for list="{{ prescricaoAnteriores }}" as="rx" hint-placeholder-count="1">
+                    <div style="background:#fff;border:1px solid oklch(90% 0.012 258);border-radius:14px;padding:14px 16px;box-sizing:border-box;">
+                      <div style="font-size:13px;font-weight:700;">{{ rx.medicamento }} — {{ rx.dosagem }}</div>
+                      <div style="font-size:11.5px;color:oklch(50% 0.018 258);margin-top:2px;">{{ rx.via }} · {{ rx.frequencia }} · {{ rx.data }}</div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ prescricaoSemAnteriores }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12.5px;color:oklch(55% 0.015 258);">Nenhuma prescrição anterior.</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:24px;right:24px;background:oklch(24% 0.02 258);color:#fff;padding:14px 20px;border-radius:14px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px -10px rgba(0,0,0,0.35);z-index:1000;">{{ toastMessage }}</div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;acento&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#0E9F8B&quot;, &quot;options&quot;: [&quot;#2F6FED&quot;, &quot;#0E9F8B&quot;, &quot;#7C5CFC&quot;], &quot;tsType&quot;: &quot;string&quot; },
+  &quot;mostrarLegendaProtocolo&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot; }
+}">
+const DEFAULT_ACCENT = '#2F6FED';
+
+const COLORS = {
+  vermelho: { bg: '#D62839', text: '#ffffff', label: 'Vermelho', full: 'Vermelho · Emergência', tempo: 'Imediato' },
+  laranja:  { bg: '#F07D12', text: '#ffffff', label: 'Laranja',  full: 'Laranja · Muito Urgente', tempo: 'Até 10 min' },
+  amarelo:  { bg: '#F0C808', text: '#3A2E00', label: 'Amarelo',  full: 'Amarelo · Urgente', tempo: 'Até 60 min' },
+  verde:    { bg: '#2E9E4F', text: '#ffffff', label: 'Verde',    full: 'Verde · Pouco Urgente', tempo: 'Até 120 min' },
+  azul:     { bg: '#1E73BE', text: '#ffffff', label: 'Azul',     full: 'Azul · Não Urgente', tempo: 'Até 240 min' },
+};
+const COLOR_ORDER = { vermelho: 0, laranja: 1, amarelo: 2, verde: 3, azul: 4 };
+
+function nowTime() {
+  return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+function formatCPF(cpf) {
+  if (!cpf) return '';
+  return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+function formatCNS(cns) {
+  if (!cns) return '';
+  return cns.replace(/(\d{3})(\d{4})(\d{4})(\d{4})/, '$1 $2 $3 $4');
+}
+function defaultCadastroForm() {
+  return { nome: '', cpf: '', cns: '', nascimento: '', sexo: 'F', telefone: '' };
+}
+function defaultTriagemForm() {
+  return { pas: '', pad: '', fc: '', fr: '', temp: '', spo2: '', dor: 0, queixa: '' };
+}
+function defaultPrescricaoForm() {
+  return { medicamento: '', dosagem: '', via: 'Oral', frequencia: '', obs: '' };
+}
+
+class Component extends DCLogic {
+  state = {
+    screen: 'login',
+    role: 'enfermeiro',
+    staffName: '',
+    loginUsuario: '',
+    loginSenha: '',
+    loginPerfil: 'enfermeiro',
+    filtroCor: 'todos',
+    selectedPatientId: null,
+    cadastroForm: defaultCadastroForm(),
+    cadastroErroCpf: false,
+    cadastroErroCns: false,
+    triagemForm: defaultTriagemForm(),
+    triagemResultado: null,
+    prescricaoForm: defaultPrescricaoForm(),
+    toast: null,
+    patients: [
+      { id: 'p1', nome: 'Maria Aparecida Souza', cpf: '12345678901', cns: '123456789012345', nascimento: '1958-05-12', sexo: 'F', telefone: '(81) 99988-7766', chegada: '07:12', status: 'Aguardando Atendimento', classificacao: 'vermelho',
+        sinaisVitais: { pas: 90, pad: 60, fc: 128, fr: 24, temp: 37.2, spo2: 89, dor: 8 },
+        evolucoes: [{ data: '07:20', responsavel: 'Enf. Carla Nunes (COREN-PE 998231)', tipo: 'Triagem', descricao: 'Classificação Vermelha — dor torácica intensa, SpO2 89%.' }],
+        prescricoes: [] },
+      { id: 'p2', nome: 'João Batista Lima', cpf: '23456789012', cns: '234567890123456', nascimento: '1990-11-03', sexo: 'M', telefone: '(81) 98877-6655', chegada: '07:30', status: 'Aguardando Atendimento', classificacao: 'laranja',
+        sinaisVitais: { pas: 110, pad: 70, fc: 118, fr: 20, temp: 38.9, spo2: 95, dor: 7 },
+        evolucoes: [{ data: '07:38', responsavel: 'Enf. Carla Nunes (COREN-PE 998231)', tipo: 'Triagem', descricao: 'Classificação Laranja — suspeita de fratura em membro inferior direito.' }],
+        prescricoes: [] },
+      { id: 'p3', nome: 'Ana Beatriz Ferreira', cpf: '34567890123', cns: '345678901234567', nascimento: '2001-02-19', sexo: 'F', telefone: '(81) 97766-5544', chegada: '07:45', status: 'Aguardando Atendimento', classificacao: 'amarelo',
+        sinaisVitais: { pas: 115, pad: 75, fc: 102, fr: 18, temp: 38.4, spo2: 97, dor: 5 },
+        evolucoes: [{ data: '07:52', responsavel: 'Enf. Carla Nunes (COREN-PE 998231)', tipo: 'Triagem', descricao: 'Classificação Amarela — febre e mal-estar geral há 2 dias.' }],
+        prescricoes: [] },
+      { id: 'p4', nome: 'Carlos Eduardo Rocha', cpf: '45678901234', cns: '456789012345678', nascimento: '1975-08-27', sexo: 'M', telefone: '(81) 96655-4433', chegada: '06:50', status: 'Em Atendimento', classificacao: 'verde',
+        sinaisVitais: { pas: 122, pad: 80, fc: 88, fr: 16, temp: 36.6, spo2: 98, dor: 3 },
+        evolucoes: [
+          { data: '06:58', responsavel: 'Enf. Carla Nunes (COREN-PE 998231)', tipo: 'Triagem', descricao: 'Classificação Verde — torção de tornozelo esquerdo após queda.' },
+          { data: '07:15', responsavel: 'Dr. Ricardo Alves (CRM-PE 45213)', tipo: 'Avaliação Médica', descricao: 'Solicitado raio-X de tornozelo. Sem sinais de fratura evidente ao exame físico.' },
+        ],
+        prescricoes: [{ data: '07:18', medico: 'Dr. Ricardo Alves', medicamento: 'Dipirona', dosagem: '500mg', via: 'Oral', frequencia: '6/6h', obs: 'Se dor.' }] },
+      { id: 'p5', nome: 'Sebastião Nunes Pereira', cpf: '56789012345', cns: '567890123456789', nascimento: '1948-01-30', sexo: 'M', telefone: '(81) 95544-3322', chegada: '07:05', status: 'Aguardando Atendimento', classificacao: 'azul',
+        sinaisVitais: { pas: 128, pad: 82, fc: 76, fr: 14, temp: 36.4, spo2: 99, dor: 1 },
+        evolucoes: [{ data: '07:10', responsavel: 'Enf. Carla Nunes (COREN-PE 998231)', tipo: 'Triagem', descricao: 'Classificação Azul — consulta de rotina para renovação de receita.' }],
+        prescricoes: [] },
+      { id: 'p6', nome: 'Patrícia Gomes Andrade', cpf: '67890123456', cns: '678901234567890', nascimento: '1995-06-09', sexo: 'F', telefone: '(81) 94433-2211', chegada: '08:02', status: 'Aguardando Triagem', classificacao: null,
+        sinaisVitais: null,
+        evolucoes: [{ data: '08:02', responsavel: 'Recepção', tipo: 'Cadastro', descricao: 'Paciente cadastrado no sistema.' }],
+        prescricoes: [] },
+    ],
+  };
+
+  _toastTimer = null;
+
+  showToast(msg) {
+    this.setState({ toast: msg });
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => this.setState({ toast: null }), 2600);
+  }
+
+  calcIdade(dataStr) {
+    if (!dataStr) return '';
+    const nasc = new Date(dataStr + 'T00:00:00');
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    const m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+    return idade;
+  }
+
+  calcManchester(v) {
+    const pas = parseFloat(v.pas);
+    const fc = parseFloat(v.fc) || 0;
+    const temp = parseFloat(v.temp) || 36;
+    const spo2 = parseFloat(v.spo2);
+    const dor = parseFloat(v.dor) || 0;
+    const pasVal = isNaN(pas) ? 200 : pas;
+    const spo2Val = isNaN(spo2) ? 100 : spo2;
+    if (spo2Val < 90 || fc > 150 || pasVal < 80 || dor >= 9) {
+      return { cor: 'vermelho', label: 'Vermelho · Emergência', tempo: 'Atendimento imediato', justificativa: 'Sinais de risco iminente de vida (SpO2, FC, PA ou dor em nível crítico).' };
+    }
+    if (spo2Val < 94 || fc > 120 || temp >= 39.5 || dor >= 7) {
+      return { cor: 'laranja', label: 'Laranja · Muito Urgente', tempo: 'Até 10 minutos', justificativa: 'Alteração significativa em sinais vitais ou dor intensa.' };
+    }
+    if (spo2Val < 96 || fc > 100 || temp >= 38 || dor >= 4) {
+      return { cor: 'amarelo', label: 'Amarelo · Urgente', tempo: 'Até 60 minutos', justificativa: 'Alteração moderada em sinais vitais ou dor relevante.' };
+    }
+    if (dor >= 1 || fc > 90) {
+      return { cor: 'verde', label: 'Verde · Pouco Urgente', tempo: 'Até 120 minutos', justificativa: 'Sinais vitais estáveis, com queixa leve.' };
+    }
+    return { cor: 'azul', label: 'Azul · Não Urgente', tempo: 'Até 240 minutos', justificativa: 'Sinais vitais normais, sem sinais de risco.' };
+  }
+
+  getPatientViewModel(p) {
+    return {
+      id: p.id,
+      nome: p.nome,
+      idade: this.calcIdade(p.nascimento),
+      cpfFmt: formatCPF(p.cpf),
+      cnsFmt: formatCNS(p.cns),
+      chegada: p.chegada,
+      status: p.status,
+    };
+  }
+
+  updateCadastro(field, value) {
+    this.setState(s => ({ cadastroForm: { ...s.cadastroForm, [field]: value } }));
+  }
+  updateTriagem(field, value) {
+    this.setState(s => ({ triagemForm: { ...s.triagemForm, [field]: value } }));
+  }
+  updatePrescricao(field, value) {
+    this.setState(s => ({ prescricaoForm: { ...s.prescricaoForm, [field]: value } }));
+  }
+
+  navigate = (screen) => {
+    this.setState({ screen, selectedPatientId: null, triagemForm: defaultTriagemForm(), triagemResultado: null });
+  };
+  abrirProntuario = (id) => {
+    this.setState({ screen: 'prontuario', selectedPatientId: id });
+  };
+  iniciarTriagem = (id) => {
+    this.setState({ screen: 'triagem', selectedPatientId: id, triagemForm: defaultTriagemForm(), triagemResultado: null });
+  };
+  prescreverPara = (id) => {
+    this.setState({ screen: 'prescricao', selectedPatientId: id, prescricaoForm: defaultPrescricaoForm() });
+  };
+
+  setRole(role) {
+    const enfermeiroScreens = ['painel', 'cadastro', 'triagem', 'prontuario'];
+    const medicoScreens = ['painel', 'prontuario', 'prescricao'];
+    const allowed = role === 'medico' ? medicoScreens : enfermeiroScreens;
+    let screen = this.state.screen;
+    if (!allowed.includes(screen)) screen = 'painel';
+    this.setState({ role, screen });
+  }
+  onSetRoleEnfermeiro = () => this.setRole('enfermeiro');
+  onSetRoleMedico = () => this.setRole('medico');
+
+  onLogout = () => {
+    this.setState({ screen: 'login', staffName: '', selectedPatientId: null });
+  };
+
+  onLoginUsuarioChange = (e) => this.setState({ loginUsuario: e.target.value });
+  onLoginSenhaChange = (e) => this.setState({ loginSenha: e.target.value });
+  onLoginPerfilChange = (e) => this.setState({ loginPerfil: e.target.value });
+  onLoginSubmit = () => {
+    const perfil = this.state.loginPerfil;
+    const nome = this.state.loginUsuario.trim() || (perfil === 'medico' ? 'Dr. Ricardo Alves' : 'Enf. Carla Nunes');
+    this.setState({ screen: 'painel', staffName: nome, role: perfil });
+  };
+
+  setFiltroCor = (key) => this.setState({ filtroCor: key });
+
+  onCadastroNomeChange = (e) => this.updateCadastro('nome', e.target.value);
+  onCadastroCpfChange = (e) => this.updateCadastro('cpf', e.target.value);
+  onCadastroCnsChange = (e) => this.updateCadastro('cns', e.target.value);
+  onCadastroNascimentoChange = (e) => this.updateCadastro('nascimento', e.target.value);
+  onCadastroSexoChange = (e) => this.updateCadastro('sexo', e.target.value);
+  onCadastroTelefoneChange = (e) => this.updateCadastro('telefone', e.target.value);
+  onCadastroSubmit = () => {
+    const f = this.state.cadastroForm;
+    const cpfDigits = (f.cpf || '').replace(/\D/g, '');
+    const cnsDigits = (f.cns || '').replace(/\D/g, '');
+    const erroCpf = cpfDigits.length !== 11;
+    const erroCns = cnsDigits.length !== 15;
+    if (!f.nome || f.nome.trim().length < 3 || erroCpf || erroCns || !f.nascimento) {
+      this.setState({ cadastroErroCpf: erroCpf, cadastroErroCns: erroCns });
+      this.showToast('Verifique os campos obrigatórios do cadastro.');
+      return;
+    }
+    const novo = {
+      id: 'p' + Date.now(), nome: f.nome.trim(), cpf: cpfDigits, cns: cnsDigits, nascimento: f.nascimento, sexo: f.sexo, telefone: f.telefone,
+      chegada: nowTime(), status: 'Aguardando Triagem', classificacao: null, sinaisVitais: null,
+      evolucoes: [{ data: nowTime(), responsavel: this.state.staffName, tipo: 'Cadastro', descricao: 'Paciente cadastrado no sistema.' }],
+      prescricoes: [],
+    };
+    this.setState(s => ({ patients: [...s.patients, novo], cadastroForm: defaultCadastroForm(), cadastroErroCpf: false, cadastroErroCns: false }));
+    this.showToast('Paciente cadastrado com sucesso.');
+    this.navigate('painel');
+  };
+
+  onTriagemPasChange = (e) => this.updateTriagem('pas', e.target.value);
+  onTriagemPadChange = (e) => this.updateTriagem('pad', e.target.value);
+  onTriagemFcChange = (e) => this.updateTriagem('fc', e.target.value);
+  onTriagemFrChange = (e) => this.updateTriagem('fr', e.target.value);
+  onTriagemTempChange = (e) => this.updateTriagem('temp', e.target.value);
+  onTriagemSpo2Change = (e) => this.updateTriagem('spo2', e.target.value);
+  onTriagemDorChange = (e) => this.updateTriagem('dor', e.target.value);
+  onTriagemQueixaChange = (e) => this.updateTriagem('queixa', e.target.value);
+  onCalcularTriagem = () => {
+    const vf = this.state.triagemForm;
+    if (!vf.pas || !vf.fc || !vf.temp || !vf.spo2) {
+      this.showToast('Preencha PA, FC, Temperatura e SpO2 para calcular.');
+      return;
+    }
+    this.setState({ triagemResultado: this.calcManchester(vf) });
+  };
+  onConfirmarTriagem = () => {
+    const r = this.state.triagemResultado;
+    if (!r) return;
+    const id = this.state.selectedPatientId;
+    const vf = this.state.triagemForm;
+    this.setState(s => ({
+      patients: s.patients.map(p => p.id === id ? {
+        ...p,
+        status: 'Aguardando Atendimento',
+        classificacao: r.cor,
+        sinaisVitais: { pas: vf.pas, pad: vf.pad, fc: vf.fc, fr: vf.fr, temp: vf.temp, spo2: vf.spo2, dor: vf.dor },
+        evolucoes: [...p.evolucoes, { data: nowTime(), responsavel: s.staffName, tipo: 'Triagem', descricao: `Classificação ${r.label} — ${vf.queixa || 'sem queixa registrada'}.` }],
+      } : p),
+      screen: 'painel', selectedPatientId: null, triagemForm: defaultTriagemForm(), triagemResultado: null,
+    }));
+    this.showToast('Triagem confirmada: classificação ' + r.label.split(' · ')[0] + '.');
+  };
+  onCancelarTriagem = () => {
+    this.setState({ selectedPatientId: null, triagemForm: defaultTriagemForm(), triagemResultado: null });
+  };
+
+  onNovaPrescricao = () => this.prescreverPara(this.state.selectedPatientId);
+  onVoltarPainel = () => this.navigate('painel');
+
+  onPrescricaoMedicamentoChange = (e) => this.updatePrescricao('medicamento', e.target.value);
+  onPrescricaoDosagemChange = (e) => this.updatePrescricao('dosagem', e.target.value);
+  onPrescricaoViaChange = (e) => this.updatePrescricao('via', e.target.value);
+  onPrescricaoFrequenciaChange = (e) => this.updatePrescricao('frequencia', e.target.value);
+  onPrescricaoObsChange = (e) => this.updatePrescricao('obs', e.target.value);
+  onPrescricaoSubmit = () => {
+    const f = this.state.prescricaoForm;
+    if (!f.medicamento || !f.dosagem) {
+      this.showToast('Informe medicamento e dosagem.');
+      return;
+    }
+    const id = this.state.selectedPatientId;
+    this.setState(s => ({
+      patients: s.patients.map(p => p.id === id ? {
+        ...p,
+        prescricoes: [...p.prescricoes, { data: nowTime(), medico: s.staffName, medicamento: f.medicamento, dosagem: f.dosagem, via: f.via, frequencia: f.frequencia, obs: f.obs }],
+        evolucoes: [...p.evolucoes, { data: nowTime(), responsavel: s.staffName, tipo: 'Prescrição', descricao: `Prescrito ${f.medicamento} ${f.dosagem} — ${f.via}, ${f.frequencia}.` }],
+      } : p),
+      prescricaoForm: defaultPrescricaoForm(),
+      screen: 'prontuario',
+    }));
+    this.showToast('Prescrição registrada.');
+  };
+
+  renderVals() {
+    const s = this.state;
+    const acento = this.props.acento || DEFAULT_ACCENT;
+    const mostrarLegenda = this.props.mostrarLegendaProtocolo ?? true;
+    const role = s.role;
+
+    const isLoginScreen = s.screen === 'login';
+    const isLoggedIn = !isLoginScreen;
+
+    const navDefs = role === 'medico'
+      ? [{ key: 'painel', label: 'Painel' }, { key: 'prontuario', label: 'Prontuário' }, { key: 'prescricao', label: 'Prescrição' }]
+      : [{ key: 'painel', label: 'Painel' }, { key: 'cadastro', label: 'Cadastro de Paciente' }, { key: 'triagem', label: 'Triagem' }, { key: 'prontuario', label: 'Prontuário' }];
+    const navItems = navDefs.map(it => {
+      const active = s.screen === it.key;
+      return {
+        ...it,
+        onClick: () => this.navigate(it.key),
+        style: `display:flex;align-items:center;gap:10px;text-align:left;border:none;padding:11px 12px;border-radius:12px;font-size:14px;font-weight:${active ? 700 : 600};color:${active ? '#ffffff' : 'oklch(40% 0.02 258)'};cursor:pointer;background:${active ? acento : 'transparent'};`,
+      };
+    });
+
+    const screenMeta = {
+      painel: { title: 'Painel de Atendimento', subtitle: role === 'medico' ? 'Fila de pacientes triados aguardando atendimento médico.' : 'Fila geral de pacientes por classificação de risco.' },
+      cadastro: { title: 'Cadastro de Paciente', subtitle: 'Registro de novo paciente com CPF e CNS.' },
+      triagem: { title: 'Triagem', subtitle: 'Classificação de risco pelo Protocolo de Manchester.' },
+      prontuario: { title: 'Prontuário', subtitle: 'Histórico clínico e evolução do paciente.' },
+      prescricao: { title: 'Prescrição', subtitle: 'Registro de medicamentos prescritos.' },
+    }[s.screen] || { title: '', subtitle: '' };
+
+    const roleBtnStyle = (isActive) => `border:none;padding:8px 16px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isActive ? acento : 'transparent'};color:${isActive ? '#ffffff' : 'oklch(45% 0.018 258)'};`;
+
+    const colorOrderVal = (cor) => cor ? (COLOR_ORDER[cor] ?? 5) : 5;
+
+    const filtrosCores = [{ key: 'todos', label: 'Todos' }, ...Object.keys(COLORS).map(c => ({ key: c, label: COLORS[c].label }))].map(f => {
+      const active = s.filtroCor === f.key;
+      const baseColor = f.key === 'todos' ? acento : COLORS[f.key].bg;
+      return {
+        ...f,
+        onClick: () => this.setFiltroCor(f.key),
+        style: `border:1px solid ${active ? 'transparent' : 'oklch(88% 0.012 258)'};background:${active ? baseColor : '#ffffff'};color:${active ? '#ffffff' : 'oklch(40% 0.02 258)'};padding:8px 16px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;`,
+      };
+    });
+
+    const painelPatientsRaw = s.patients
+      .filter(p => s.filtroCor === 'todos' || p.classificacao === s.filtroCor)
+      .slice()
+      .sort((a, b) => colorOrderVal(a.classificacao) - colorOrderVal(b.classificacao));
+    const painelPatients = painelPatientsRaw.map(p => {
+      const vm = this.getPatientViewModel(p);
+      const classInfo = p.classificacao ? COLORS[p.classificacao] : { bg: 'oklch(92% 0.008 258)', text: 'oklch(45% 0.015 258)' };
+      return {
+        ...vm,
+        classLabelShort: p.classificacao ? COLORS[p.classificacao].label : '—',
+        rowStyle: `display:flex;align-items:center;gap:16px;background:#ffffff;border:1px solid oklch(90% 0.012 258);border-left:5px solid ${classInfo.bg};border-radius:14px;padding:14px 20px;`,
+        classBadgeStyle: `width:74px;text-align:center;padding:6px 0;border-radius:10px;background:${classInfo.bg};color:${classInfo.text};font-size:11.5px;font-weight:800;flex-shrink:0;`,
+        statusStyle: `font-size:11.5px;font-weight:700;color:oklch(45% 0.018 258);background:oklch(96% 0.008 258);padding:6px 12px;border-radius:999px;white-space:nowrap;`,
+        showTriagemBtn: role === 'enfermeiro' && p.status === 'Aguardando Triagem',
+        onTriagem: () => this.iniciarTriagem(p.id),
+        onVer: () => this.abrirProntuario(p.id),
+      };
+    });
+    const painelVazio = painelPatients.length === 0;
+
+    const legendaItems = Object.keys(COLORS).map(c => ({
+      label: COLORS[c].full,
+      tempo: COLORS[c].tempo,
+      dotStyle: `width:10px;height:10px;border-radius:50%;background:${COLORS[c].bg};display:inline-block;`,
+    }));
+
+    const todosPacientes = s.patients.map(p => {
+      const vm = this.getPatientViewModel(p);
+      const classInfo = p.classificacao ? COLORS[p.classificacao] : { bg: 'oklch(85% 0.01 258)' };
+      return { ...vm, classDotStyle: `width:12px;height:12px;border-radius:50%;background:${classInfo.bg};flex-shrink:0;`, onAbrir: () => this.abrirProntuario(p.id), onPrescrever: () => this.prescreverPara(p.id) };
+    });
+
+    const patientsAguardandoTriagem = s.patients.filter(p => p.status === 'Aguardando Triagem').map(p => {
+      const vm = this.getPatientViewModel(p);
+      return { ...vm, onSelecionar: () => this.iniciarTriagem(p.id) };
+    });
+
+    const selectedPatient = s.patients.find(p => p.id === s.selectedPatientId) || null;
+
+    const triagemForm = s.triagemForm;
+    const podeCalcular = !!(triagemForm.pas && triagemForm.fc && triagemForm.temp && triagemForm.spo2);
+    const r = s.triagemResultado;
+
+    const sv = selectedPatient ? selectedPatient.sinaisVitais : null;
+    const prontuarioVitais = [
+      { label: 'PA', value: sv ? `${sv.pas}/${sv.pad}` : '—' },
+      { label: 'FC', value: sv ? `${sv.fc} bpm` : '—' },
+      { label: 'FR', value: sv ? `${sv.fr} irpm` : '—' },
+      { label: 'Temp', value: sv ? `${sv.temp} °C` : '—' },
+      { label: 'SpO2', value: sv ? `${sv.spo2}%` : '—' },
+      { label: 'Dor', value: sv ? `${sv.dor}/10` : '—' },
+    ];
+    const prontuarioClassInfo = selectedPatient && selectedPatient.classificacao ? COLORS[selectedPatient.classificacao] : { bg: 'oklch(92% 0.008 258)', text: 'oklch(45% 0.015 258)' };
+
+    return {
+      acento, isLoginScreen, isLoggedIn,
+      loginUsuario: s.loginUsuario, loginSenha: s.loginSenha, loginPerfil: s.loginPerfil,
+      onLoginUsuarioChange: this.onLoginUsuarioChange, onLoginSenhaChange: this.onLoginSenhaChange, onLoginPerfilChange: this.onLoginPerfilChange, onLoginSubmit: this.onLoginSubmit,
+      navItems,
+      screenTitle: screenMeta.title, screenSubtitle: screenMeta.subtitle,
+      onSetRoleEnfermeiro: this.onSetRoleEnfermeiro, onSetRoleMedico: this.onSetRoleMedico,
+      roleBtnEnfermeiroStyle: roleBtnStyle(role === 'enfermeiro'), roleBtnMedicoStyle: roleBtnStyle(role === 'medico'),
+      staffName: s.staffName, staffRegistro: role === 'medico' ? 'CRM-PE 45213' : 'COREN-PE 998231',
+      onLogout: this.onLogout,
+
+      screenIsPainel: s.screen === 'painel', screenIsCadastro: s.screen === 'cadastro', screenIsTriagem: s.screen === 'triagem',
+      screenIsProntuario: s.screen === 'prontuario', screenIsPrescricao: s.screen === 'prescricao',
+
+      filtrosCores, painelPatients, painelVazio,
+      mostrarLegenda, legendaItems,
+
+      cadastroForm: s.cadastroForm, cadastroErroCpf: s.cadastroErroCpf, cadastroErroCns: s.cadastroErroCns,
+      onCadastroNomeChange: this.onCadastroNomeChange, onCadastroCpfChange: this.onCadastroCpfChange, onCadastroCnsChange: this.onCadastroCnsChange,
+      onCadastroNascimentoChange: this.onCadastroNascimentoChange, onCadastroSexoChange: this.onCadastroSexoChange, onCadastroTelefoneChange: this.onCadastroTelefoneChange,
+      onCadastroSubmit: this.onCadastroSubmit,
+
+      triagemSemPaciente: !selectedPatient, triagemComPaciente: !!selectedPatient,
+      patientsAguardandoTriagem, triagemListaVazia: patientsAguardandoTriagem.length === 0,
+      triagemPacienteNome: selectedPatient ? selectedPatient.nome : '', triagemPacienteIdade: selectedPatient ? this.calcIdade(selectedPatient.nascimento) : '',
+      triagemForm,
+      onTriagemPasChange: this.onTriagemPasChange, onTriagemPadChange: this.onTriagemPadChange, onTriagemFcChange: this.onTriagemFcChange,
+      onTriagemFrChange: this.onTriagemFrChange, onTriagemTempChange: this.onTriagemTempChange, onTriagemSpo2Change: this.onTriagemSpo2Change,
+      onTriagemDorChange: this.onTriagemDorChange, onTriagemQueixaChange: this.onTriagemQueixaChange,
+      onCalcularTriagem: this.onCalcularTriagem, onCancelarTriagem: this.onCancelarTriagem, onConfirmarTriagem: this.onConfirmarTriagem,
+      calcularBtnStyle: `border:none;background:${podeCalcular ? acento : 'oklch(88% 0.012 258)'};color:${podeCalcular ? '#ffffff' : 'oklch(55% 0.015 258)'};padding:11px 18px;border-radius:12px;font-size:13.5px;font-weight:700;cursor:${podeCalcular ? 'pointer' : 'not-allowed'};`,
+      triagemTemResultado: !!r, triagemSemResultado: !r,
+      triagemResultadoLabel: r ? r.label : '', triagemResultadoTempo: r ? r.tempo : '', triagemResultadoJustificativa: r ? r.justificativa : '',
+      triagemResultadoCardStyle: r ? `background:${COLORS[r.cor].bg};color:${COLORS[r.cor].text};border-radius:18px;padding:20px 22px;` : '',
+
+      prontuarioSemPaciente: !selectedPatient, prontuarioComPaciente: !!selectedPatient,
+      todosPacientes,
+      prontuarioNome: selectedPatient ? selectedPatient.nome : '',
+      prontuarioIdade: selectedPatient ? this.calcIdade(selectedPatient.nascimento) : '',
+      prontuarioCpf: selectedPatient ? formatCPF(selectedPatient.cpf) : '',
+      prontuarioCns: selectedPatient ? formatCNS(selectedPatient.cns) : '',
+      prontuarioClassLabel: selectedPatient && selectedPatient.classificacao ? COLORS[selectedPatient.classificacao].label : 'Não classificado',
+      prontuarioClassBadgeStyle: `padding:8px 16px;border-radius:10px;background:${prontuarioClassInfo.bg};color:${prontuarioClassInfo.text};font-size:12.5px;font-weight:800;white-space:nowrap;`,
+      prontuarioVitais,
+      prontuarioEvolucoes: selectedPatient ? [...selectedPatient.evolucoes].reverse() : [],
+      prontuarioPrescricoes: selectedPatient ? selectedPatient.prescricoes : [],
+      prontuarioSemPrescricao: !selectedPatient || selectedPatient.prescricoes.length === 0,
+      podeNovaPrescricao: role === 'medico',
+      onNovaPrescricao: this.onNovaPrescricao, onVoltarPainel: this.onVoltarPainel,
+
+      prescricaoSemPaciente: !selectedPatient, prescricaoComPaciente: !!selectedPatient,
+      prescricaoPacienteNome: selectedPatient ? selectedPatient.nome : '',
+      prescricaoForm: s.prescricaoForm,
+      onPrescricaoMedicamentoChange: this.onPrescricaoMedicamentoChange, onPrescricaoDosagemChange: this.onPrescricaoDosagemChange,
+      onPrescricaoViaChange: this.onPrescricaoViaChange, onPrescricaoFrequenciaChange: this.onPrescricaoFrequenciaChange, onPrescricaoObsChange: this.onPrescricaoObsChange,
+      onPrescricaoSubmit: this.onPrescricaoSubmit,
+      prescricaoAnteriores: selectedPatient ? [...selectedPatient.prescricoes].reverse() : [],
+      prescricaoSemAnteriores: !selectedPatient || selectedPatient.prescricoes.length === 0,
+
+      hasToast: !!s.toast, toastMessage: s.toast || '',
+    };
+  }
+}
+
+</script>
+</body>
+</html>
