@@ -6,10 +6,10 @@
 
 ## 2. Autenticação (`autenticacao-matricula-pin`)
 
-- [ ] 2.1 Implementar hashing de PIN (bcrypt/argon2) e cadastro de `COLABORADOR`.
-- [ ] 2.2 Implementar endpoint de login que valida matrícula + PIN e emite JWT.
-- [ ] 2.3 Implementar middleware RBAC que restringe rotas por perfil (`enfermeiro`/`medico`).
-- [ ] 2.4 Testes cobrindo os cenários de `specs/autenticacao-matricula-pin/spec.md` (login sucesso/falha, PIN nunca em texto puro, RBAC prescrição).
+- [x] 2.1 Implementar hashing de PIN (bcrypt/argon2) e cadastro de `COLABORADOR`.
+- [x] 2.2 Implementar endpoint de login que valida matrícula + PIN e emite JWT.
+- [x] 2.3 Implementar middleware RBAC que restringe rotas por perfil (`enfermeiro`/`medico`).
+- [x] 2.4 Testes cobrindo os cenários de `specs/autenticacao-matricula-pin/spec.md` (login sucesso/falha, PIN nunca em texto puro, RBAC prescrição).
 
 ## 3. Cadastro de Paciente (`cadastro-paciente`)
 
