@@ -33,12 +33,12 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:14px;">
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Usuário (LDAP/AD)</label>
-            <input type="text" value="{{ loginUsuario }}" onChange="{{ onLoginUsuarioChange }}" placeholder="ex: c.nunes" style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+            <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Matrícula</label>
+            <input type="text" value="{{ loginMatricula }}" onChange="{{ onLoginMatriculaChange }}" placeholder="ex: 000123" maxlength="6" inputmode="numeric" style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Senha</label>
-            <input type="password" value="{{ loginSenha }}" onChange="{{ onLoginSenhaChange }}" placeholder="••••••••" style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
+            <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">PIN</label>
+            <input type="password" value="{{ loginPin }}" onChange="{{ onLoginPinChange }}" placeholder="••••" maxlength="4" inputmode="numeric" style="border:1px solid oklch(88% 0.012 258);border-radius:12px;padding:11px 14px;font-size:14px;box-sizing:border-box;" />
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;">
             <label style="font-size:12px;font-weight:700;color:oklch(40% 0.02 258);">Perfil (demonstração)</label>
@@ -47,9 +47,9 @@
               <option value="medico">Médico(a)</option>
             </select>
           </div>
-          <button onClick="{{ onLoginSubmit }}" style="margin-top:6px;border:none;background:{{ acento }};color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">Entrar via LDAP/AD</button>
+          <button onClick="{{ onLoginSubmit }}" style="margin-top:6px;border:none;background:{{ acento }};color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">Entrar</button>
         </div>
-        <div style="text-align:center;font-size:11px;color:oklch(58% 0.015 258);">Autenticação integrada ao Active Directory institucional (RF001).</div>
+        <div style="text-align:center;font-size:11px;color:oklch(58% 0.015 258);">Autenticação por matrícula e PIN institucional (RF001).</div>
       </div>
     </div>
   </sc-if>
@@ -455,8 +455,8 @@ class Component extends DCLogic {
     screen: 'login',
     role: 'enfermeiro',
     staffName: '',
-    loginUsuario: '',
-    loginSenha: '',
+    loginMatricula: '',
+    loginPin: '',
     loginPerfil: 'enfermeiro',
     filtroCor: 'todos',
     selectedPatientId: null,
@@ -589,12 +589,12 @@ class Component extends DCLogic {
     this.setState({ screen: 'login', staffName: '', selectedPatientId: null });
   };
 
-  onLoginUsuarioChange = (e) => this.setState({ loginUsuario: e.target.value });
-  onLoginSenhaChange = (e) => this.setState({ loginSenha: e.target.value });
+  onLoginMatriculaChange = (e) => this.setState({ loginMatricula: e.target.value });
+  onLoginPinChange = (e) => this.setState({ loginPin: e.target.value });
   onLoginPerfilChange = (e) => this.setState({ loginPerfil: e.target.value });
   onLoginSubmit = () => {
     const perfil = this.state.loginPerfil;
-    const nome = this.state.loginUsuario.trim() || (perfil === 'medico' ? 'Dr. Ricardo Alves' : 'Enf. Carla Nunes');
+    const nome = perfil === 'medico' ? 'Dr. Ricardo Alves' : 'Enf. Carla Nunes';
     this.setState({ screen: 'painel', staffName: nome, role: perfil });
   };
 
@@ -791,8 +791,8 @@ class Component extends DCLogic {
 
     return {
       acento, isLoginScreen, isLoggedIn,
-      loginUsuario: s.loginUsuario, loginSenha: s.loginSenha, loginPerfil: s.loginPerfil,
-      onLoginUsuarioChange: this.onLoginUsuarioChange, onLoginSenhaChange: this.onLoginSenhaChange, onLoginPerfilChange: this.onLoginPerfilChange, onLoginSubmit: this.onLoginSubmit,
+      loginMatricula: s.loginMatricula, loginPin: s.loginPin, loginPerfil: s.loginPerfil,
+      onLoginMatriculaChange: this.onLoginMatriculaChange, onLoginPinChange: this.onLoginPinChange, onLoginPerfilChange: this.onLoginPerfilChange, onLoginSubmit: this.onLoginSubmit,
       navItems,
       screenTitle: screenMeta.title, screenSubtitle: screenMeta.subtitle,
       onSetRoleEnfermeiro: this.onSetRoleEnfermeiro, onSetRoleMedico: this.onSetRoleMedico,

@@ -4,7 +4,7 @@
 Este documento é a ÚNICA fonte de verdade para a orquestração do desenvolvimento. O objetivo é construir um sistema hospitalar seguro e em conformidade com a LGPD.
 
 ### Objetivos de Alto Nível
-- [ ] Implementar autenticação via LDAP/AD.
+- [ ] Implementar autenticação via matrícula e PIN.
 - [ ] Gerenciar cadastro de pacientes (CNS/CPF).
 - [ ] Garantir trilhas de auditoria imutáveis.
 
