@@ -1,13 +1,40 @@
 # Arquitetura e Segurança
 
 ## 1. Stack Técnica
-* Front-end(recomendacao react), Back-end(recomendacao python) e Banco de Dados.
+* **Front-end**: React (componentes funcionais, hooks) — protótipo de referência em `docs/prototipo/projeto/`.
+* **Back-end**: Python (FastAPI recomendado) — API REST conforme `05-interfaces.md`.
+* **Banco de Dados**: PostgreSQL — schema conforme `04-modelo-dados.md`.
+* **Autenticação**: matrícula + PIN (hash bcrypt/argon2), token JWT (ver RF001 em `02-requisitos.md`).
+
+### Diagrama de Componentes
+```mermaid
+flowchart TB
+    subgraph Cliente
+        FE[Front-end React]
+    end
+    subgraph Servidor
+        API[API REST - Python/FastAPI]
+        AUTH["Módulo de Autenticação<br/>Matrícula + PIN"]
+    end
+    DB[(PostgreSQL)]
+    AGHU[AGHU - Integração Futura]
+
+    FE -->|HTTPS| API
+    API --> AUTH
+    API --> DB
+    API -.->|futuro| AGHU
+```
 
 ## 2. Conformidade LGPD
-* Anonimização e gestão de consentimento (TCLE).
+* Anonimização de dados em ambientes de teste/homologação.
+* Gestão de consentimento via Termo de Consentimento Livre e Esclarecido (TCLE) no cadastro do paciente.
+* Criptografia AES-256 para dados sensíveis em repouso (RNF001).
+* Trilha de auditoria imutável para acesso a dados sensíveis (RNF002).
 
 ## 3. Acessos
-* RBAC e MFA.
+* **RBAC**: perfis Enfermeiro e Médico com permissões distintas (ex: apenas Médico pode prescrever — ver RF005).
+* **MFA**: não implementado nesta fase (autenticação simplificada por matrícula + PIN — ver decisão em RF001); reavaliar para produção.
+* Sessão expira por inatividade (parâmetro a definir na implementação).
 
 ## 4. Guardrails para IA (SDD)
 Para manter a integridade sistêmica, os assistentes de IA devem aderir às seguintes restrições:
