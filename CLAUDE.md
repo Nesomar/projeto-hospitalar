@@ -24,11 +24,7 @@ Para **cada fase**, seguir sempre esta sequência, sem pular etapas:
    branch única pro change inteiro).
 2. **Durante a implementação**: usar as skills de `fullstack-dev-skills` (ex.: `fastapi-expert`, `postgres-pro`,
    `python-pro`, `react-expert`, conforme a stack tocada na fase).
-3. **Ao finalizar a implementação da fase**: rodar a skill `code-review` sobre o diff antes de considerar a
-   fase concluída.
-4. **Ao abrir PR**: usar `pr-review-toolkit` (skill `review-pr` / agentes do toolkit) em vez do fluxo de PR
-   genérico.
-5. **Trabalho de design/front-end**: usar `frontend-design` junto com `ui-ux-pro-max`.
+3. **Trabalho de design/front-end**: usar `frontend-design` junto com `ui-ux-pro-max`.
 
 Depois do merge de cada PR, sincronizar `develop` local (`git checkout develop && git pull`) antes de criar a
 branch da próxima fase.
