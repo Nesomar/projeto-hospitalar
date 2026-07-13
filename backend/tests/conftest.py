@@ -11,7 +11,9 @@ from sqlalchemy.pool import StaticPool
 
 from app.api.deps import get_db
 from app.core.database import Base
+from app.core.security import create_access_token, hash_pin
 from app.main import app
+from app.models.colaborador import Colaborador
 
 engine = create_engine(
     "sqlite:///:memory:",
@@ -51,3 +53,17 @@ def db_session():
         yield db
     finally:
         db.close()
+
+
+@pytest.fixture
+def auth_headers(db_session):
+    """Simula o bootstrap: cria um colaborador direto no banco (como o
+    scripts/seed_colaborador.py faria) e retorna um header Authorization
+    valido, ja que POST /api/colaboradores agora exige autenticacao."""
+    bootstrap = Colaborador(
+        matricula="000001", pin_hash=hash_pin("0000"), nome="Bootstrap", perfil="medico"
+    )
+    db_session.add(bootstrap)
+    db_session.commit()
+    token = create_access_token(subject=bootstrap.matricula, perfil=bootstrap.perfil)
+    return {"Authorization": f"Bearer {token}"}

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
-MATRICULA_PATTERN = r"^\d{6}$"
-PIN_PATTERN = r"^\d{4}$"
+MATRICULA_PATTERN = r"^[0-9]{6}$"
+PIN_PATTERN = r"^[0-9]{4}$"
 
 
 class LoginRequest(BaseModel):

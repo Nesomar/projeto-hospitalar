@@ -7,7 +7,7 @@ from app.schemas.auth import MATRICULA_PATTERN, PIN_PATTERN
 class ColaboradorCreate(BaseModel):
     matricula: str = Field(pattern=MATRICULA_PATTERN)
     pin: str = Field(pattern=PIN_PATTERN)
-    nome: str
+    nome: str = Field(min_length=1)
     perfil: str = Field(description=f"Um de: {', '.join(PERFIS_COLABORADOR)}")
 
     @field_validator("perfil")

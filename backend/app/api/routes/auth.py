@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
-from app.api.deps import DbDep, get_colaborador_ativo
+from app.api.deps import CurrentColaborador, DbDep, get_colaborador_ativo
 from app.core.security import create_access_token, hash_pin, verify_pin
 from app.models.colaborador import Colaborador
 from app.schemas.auth import LoginRequest, TokenResponse
@@ -11,7 +11,11 @@ router = APIRouter(prefix="/api", tags=["auth"])
 
 
 @router.post("/colaboradores", response_model=ColaboradorOut, status_code=status.HTTP_201_CREATED)
-def cadastrar_colaborador(payload: ColaboradorCreate, db: DbDep) -> Colaborador:
+def cadastrar_colaborador(
+    payload: ColaboradorCreate,
+    db: DbDep,
+    _autenticado: CurrentColaborador,
+) -> Colaborador:
     existente = db.query(Colaborador).filter(Colaborador.matricula == payload.matricula).first()
     if existente is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Matrícula já cadastrada")
