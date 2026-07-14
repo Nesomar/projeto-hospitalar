@@ -15,7 +15,7 @@ para especificação e decisões de arquitetura.
 
 - Python 3.11+
 - Node.js 18+
-- PostgreSQL (local, ou via Docker) — ou SQLite para um teste rápido sem instalar nada
+- Docker (roda o PostgreSQL via `docker-compose.yml`) — ou SQLite para um teste rápido sem Docker
 
 ## Backend
 
@@ -37,11 +37,11 @@ Copie `.env.example` para `.env` e ajuste `JWT_SECRET` (mínimo 32 caracteres, s
 cp .env.example .env
 ```
 
-**Opção A — PostgreSQL via Docker (recomendado, reflete o schema real):**
+**Opção A — PostgreSQL via Docker Compose (recomendado, reflete o schema real):**
 
 ```bash
-docker run --name upa-postgres -e POSTGRES_USER=upa_user -e POSTGRES_PASSWORD=upa_password \
-  -e POSTGRES_DB=upa_nordeste -p 5432:5432 -d postgres:16
+docker compose up -d      # a partir da raiz do repositório
+cd backend
 alembic upgrade head
 ```
 
@@ -93,8 +93,9 @@ Acesse `http://localhost:5173`. Login com as credenciais criadas no passo 3
 ## Estrutura do repositório
 
 ```
-backend/     API FastAPI, models, schemas, testes, migrations Alembic
-frontend/    React + Vite
-docs/        SRD, casos de uso, modelo de dados, protótipo de referência
-openspec/    Changes formais (specs e tasks por fase de implementação)
+backend/            API FastAPI, models, schemas, testes, migrations Alembic
+frontend/            React + Vite
+docs/                SRD, casos de uso, modelo de dados, protótipo de referência
+openspec/            Changes formais (specs e tasks por fase de implementação)
+docker-compose.yml   PostgreSQL local para desenvolvimento
 ```
