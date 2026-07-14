@@ -26,9 +26,9 @@ def verify_pin(pin: str, pin_hash: str | None) -> bool:
     return bcrypt.checkpw(pin.encode("utf-8"), target.encode("utf-8"))
 
 
-def create_access_token(subject: str, perfil: str) -> str:
+def create_access_token(subject: str, perfil: str, nome: str = "") -> str:
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_expire_minutes)
-    payload = {"sub": subject, "perfil": perfil, "exp": expires_at}
+    payload = {"sub": subject, "perfil": perfil, "nome": nome, "exp": expires_at}
     return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
 
 

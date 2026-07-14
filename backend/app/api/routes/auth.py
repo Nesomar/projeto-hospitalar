@@ -43,5 +43,7 @@ def login(payload: LoginRequest, db: DbDep) -> TokenResponse:
     if colaborador is None or not verify_pin(payload.pin, pin_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais inválidas")
 
-    access_token = create_access_token(subject=colaborador.matricula, perfil=colaborador.perfil)
+    access_token = create_access_token(
+        subject=colaborador.matricula, perfil=colaborador.perfil, nome=colaborador.nome
+    )
     return TokenResponse(access_token=access_token)

@@ -6,6 +6,15 @@ function defaultForm() {
   return { nome: "", cpf: "", cns: "", data_nascimento: "", sexo: "F", telefone: "" };
 }
 
+// input type="date" sempre entrega yyyy-mm-dd, mas tolera-se tambem dd/mm/yyyy
+// (autofill, colar texto, navegador sem suporte nativo ao widget de data).
+function normalizarDataISO(valor) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) return valor;
+  const match = valor.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (match) return `${match[3]}-${match[2]}-${match[1]}`;
+  return null;
+}
+
 export default function CadastroScreen({ token, showToast, onCadastrado }) {
   const [form, setForm] = useState(defaultForm());
   const [erroCpf, setErroCpf] = useState(false);
@@ -21,9 +30,10 @@ export default function CadastroScreen({ token, showToast, onCadastrado }) {
     const cnsDigits = form.cns.replace(/\D/g, "");
     const invalidoCpf = cpfDigits.length !== 11;
     const invalidoCns = cnsDigits.length !== 15;
+    const dataNascimentoISO = normalizarDataISO(form.data_nascimento);
     setErroCpf(invalidoCpf);
     setErroCns(invalidoCns);
-    if (!form.nome || form.nome.trim().length < 3 || invalidoCpf || invalidoCns || !form.data_nascimento) {
+    if (!form.nome || form.nome.trim().length < 3 || invalidoCpf || invalidoCns || !dataNascimentoISO) {
       showToast("Verifique os campos obrigatórios do cadastro.");
       return;
     }
@@ -33,7 +43,7 @@ export default function CadastroScreen({ token, showToast, onCadastrado }) {
         nome: form.nome.trim(),
         cpf: cpfDigits,
         cns: cnsDigits,
-        data_nascimento: form.data_nascimento,
+        data_nascimento: dataNascimentoISO,
         sexo: form.sexo,
         telefone: form.telefone || null,
       });
