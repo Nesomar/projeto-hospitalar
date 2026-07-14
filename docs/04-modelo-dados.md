@@ -66,7 +66,7 @@ erDiagram
     "cns": { "type": "string", "pattern": "^[0-9]{15}$" },
     "data_nascimento": { "type": "string", "format": "date" }
   },
-  "required": ["nome", "cpf", "data_nascimento"]
+  "required": ["nome", "cpf", "cns", "data_nascimento"]
 }
 ```
 
