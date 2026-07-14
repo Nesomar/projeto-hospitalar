@@ -49,6 +49,6 @@
 
 ## 9. Fechamento
 
-- [ ] 9.1 Rodar `openspec validate auth-matricula-pin-srd` e corrigir eventuais erros de formatação das specs.
-- [ ] 9.2 Sincronizar `docs/SPEC.md` (Task Breakdown) com o progresso desta mudança.
-- [ ] 9.3 Arquivar a mudança (`openspec archive`) após validação em produção/homologação.
+- [x] 9.1 Rodar `openspec validate auth-matricula-pin-srd` e corrigir eventuais erros de formatação das specs.
+- [x] 9.2 Sincronizar `docs/SPEC.md` (Task Breakdown) com o progresso desta mudança.
+- [x] 9.3 Arquivar a mudança (`openspec archive`) após validação em produção/homologação.

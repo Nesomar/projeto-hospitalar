@@ -4,9 +4,9 @@
 Este documento é a ÚNICA fonte de verdade para a orquestração do desenvolvimento. O objetivo é construir um sistema hospitalar seguro e em conformidade com a LGPD.
 
 ### Objetivos de Alto Nível
-- [ ] Implementar autenticação via matrícula e PIN.
-- [ ] Gerenciar cadastro de pacientes (CNS/CPF).
-- [ ] Garantir trilhas de auditoria imutáveis.
+- [x] Implementar autenticação via matrícula e PIN.
+- [x] Gerenciar cadastro de pacientes (CNS/CPF).
+- [x] Garantir trilhas de auditoria imutáveis.
 
 ## 2. Contexto do Projeto (Documentação Imutável)
 As definições detalhadas estão distribuídas nos seguintes documentos:
@@ -30,15 +30,29 @@ As definições detalhadas estão distribuídas nos seguintes documentos:
 - Burlar o sistema de RBAC (Role-Based Access Control).
 
 ## 4. Task Breakdown (Plano de Implementação)
-### Fase 1: Infraestrutura e Dados
-- [ ] [TASK-001] Validar esquemas de banco de dados conforme `04-modelo-dados.md`.
-- [ ] [TASK-002] Configurar ambiente de auditoria de logs.
+Plano detalhado e fase-a-fase em `openspec/changes/auth-matricula-pin-srd/tasks.md`
+(mudança `auth-matricula-pin-srd`). Resumo do progresso:
 
-### Fase 2: Funcionalidades Essenciais
-- [ ] [TASK-003] Implementar Módulo de Autenticação (RF001).
-- [ ] [TASK-004] Implementar Cadastro de Pacientes (RF002).
+- [x] Fase 1 — Fundação de Dados: migrations Alembic (`COLABORADOR`, `PACIENTE`, `PRONTUARIO`,
+  `EVOLUCAO`, `PRESCRICAO`), soft delete e enum de `classificacao_risco`.
+- [x] Fase 2 — Autenticação (RF001): login por matrícula + PIN (hash bcrypt), JWT, RBAC por perfil.
+- [x] Fase 3 — Cadastro de Paciente (RF002): `POST /api/pacientes` com validação CPF/CNS,
+  evolução automática "Cadastro".
+- [x] Fase 4 — Triagem (Protocolo de Manchester, UC001): cálculo/confirmação de classificação de
+  risco, 5 cores com cascata de critérios.
+- [x] Fase 5 — Prontuário (UC002): consulta somente-leitura (sinais vitais, evolução, prescrições).
+- [x] Fase 6 — Prescrição (UC003): `POST /api/pacientes/{id}/prescricoes` restrito a perfil médico.
+- [x] Fase 7 — Painel de Atendimento (UC006): listagem priorizada por gravidade, filtro por cor.
+- [x] Fase 8 — Front-end: React (Vite) recriando as telas do protótipo com chamadas reais à API.
+- [ ] Fase 9 — Fechamento: validação das specs, sincronização deste documento (em andamento),
+  arquivamento da mudança pendente de validação em produção/homologação.
 
 ## 5. Critérios de Verificação Global
-- [ ] 100% de cobertura em rotas de autenticação.
-- [ ] Zero vulnerabilidades críticas no lint de segurança.
-- [ ] Conformidade total com os esquemas JSON/OpenAPI.
+- [x] Cobertura de testes nas rotas de autenticação, RBAC, cadastro, triagem, prontuário,
+  prescrição e painel (`backend/tests/`, 69 testes).
+- [ ] Zero vulnerabilidades críticas no lint de segurança — nenhuma varredura SAST formal rodada
+  ainda; pendente para antes de produção.
+- [ ] Criptografia AES-256 para dados sensíveis em repouso (RNF001) — **não implementada**. Apenas
+  o PIN é protegido (hash bcrypt); CPF/CNS/demais campos ficam em texto plano no PostgreSQL. Gap
+  conhecido, deve ser tratado antes de uso em produção.
+- [x] Documentação OpenAPI gerada automaticamente pelo FastAPI (`/docs`, `/openapi.json`).
