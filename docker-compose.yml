@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: upa_user
+      POSTGRES_PASSWORD: upa_password
+      POSTGRES_DB: upa_nordeste
+    ports:
+      - "5432:5432"
+    volumes:
+      - upa_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U upa_user -d upa_nordeste"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  upa_postgres_data:

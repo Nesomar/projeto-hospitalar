@@ -21,11 +21,9 @@ via_prescricao = sa.Enum("Oral", "IV", "IM", "SC", "Tópica", name="via_prescric
 
 
 def upgrade() -> None:
-    bind = op.get_bind()
-    perfil_colaborador.create(bind, checkfirst=True)
-    classificacao_risco.create(bind, checkfirst=True)
-    via_prescricao.create(bind, checkfirst=True)
-
+    # Cada ENUM e usado em uma unica tabela abaixo; create_table ja cria o
+    # tipo automaticamente ao compilar a coluna. Chamar .create() explicito
+    # aqui tambem duplicaria a criacao e falharia com "type already exists".
     op.create_table(
         "colaboradores",
         sa.Column("id", sa.Integer, primary_key=True),
@@ -98,13 +96,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    # drop_table remove automaticamente o ENUM associado a cada coluna.
     op.drop_table("prescricoes")
     op.drop_table("evolucoes")
     op.drop_table("prontuarios")
     op.drop_table("pacientes")
     op.drop_table("colaboradores")
-
-    bind = op.get_bind()
-    via_prescricao.drop(bind, checkfirst=True)
-    classificacao_risco.drop(bind, checkfirst=True)
-    perfil_colaborador.drop(bind, checkfirst=True)
