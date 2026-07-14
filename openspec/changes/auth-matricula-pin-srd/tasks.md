@@ -26,9 +26,9 @@
 
 ## 5. Prontuário (`prontuario`)
 
-- [ ] 5.1 Implementar endpoint de consulta de prontuário (sinais vitais, evoluções em ordem decrescente, prescrições).
-- [ ] 5.2 Restringir exibição da ação "+ Nova Prescrição" ao perfil médico.
-- [ ] 5.3 Testes cobrindo os cenários de `specs/prontuario/spec.md`.
+- [x] 5.1 Implementar endpoint de consulta de prontuário (sinais vitais, evoluções em ordem decrescente, prescrições).
+- [x] 5.2 Restringir exibição da ação "+ Nova Prescrição" ao perfil médico.
+- [x] 5.3 Testes cobrindo os cenários de `specs/prontuario/spec.md`.
 
 ## 6. Prescrição (`prescricao`)
 
