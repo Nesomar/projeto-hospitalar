@@ -38,9 +38,9 @@
 
 ## 7. Painel de Atendimento (`painel-atendimento`)
 
-- [ ] 7.1 Implementar endpoint de listagem de pacientes com ordenação por gravidade e filtro por cor.
-- [ ] 7.2 Restringir ação "Fazer Triagem" a pacientes "Aguardando Triagem" e perfil enfermeiro.
-- [ ] 7.3 Testes cobrindo os cenários de `specs/painel-atendimento/spec.md`.
+- [x] 7.1 Implementar endpoint de listagem de pacientes com ordenação por gravidade e filtro por cor.
+- [x] 7.2 Restringir ação "Fazer Triagem" a pacientes "Aguardando Triagem" e perfil enfermeiro.
+- [x] 7.3 Testes cobrindo os cenários de `specs/painel-atendimento/spec.md`.
 
 ## 8. Front-end
 
