@@ -32,9 +32,9 @@
 
 ## 6. Prescrição (`prescricao`)
 
-- [ ] 6.1 Implementar endpoint `POST /api/pacientes/{id}/prescricoes` restrito a perfil médico (RBAC).
-- [ ] 6.2 Criar evolução automática do tipo "Prescrição" ao registrar.
-- [ ] 6.3 Testes cobrindo os cenários de `specs/prescricao/spec.md`.
+- [x] 6.1 Implementar endpoint `POST /api/pacientes/{id}/prescricoes` restrito a perfil médico (RBAC).
+- [x] 6.2 Criar evolução automática do tipo "Prescrição" ao registrar.
+- [x] 6.3 Testes cobrindo os cenários de `specs/prescricao/spec.md`.
 
 ## 7. Painel de Atendimento (`painel-atendimento`)
 
