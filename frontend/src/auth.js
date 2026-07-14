@@ -3,7 +3,7 @@ const STORAGE_KEY = "upa-nordeste-token";
 export function decodeToken(token) {
   const payloadBase64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
   const payload = JSON.parse(atob(payloadBase64));
-  return { matricula: payload.sub, perfil: payload.perfil, exp: payload.exp };
+  return { matricula: payload.sub, perfil: payload.perfil, nome: payload.nome || "", exp: payload.exp };
 }
 
 export function salvarToken(token) {
@@ -18,12 +18,12 @@ export function carregarSessao() {
   const token = localStorage.getItem(STORAGE_KEY);
   if (!token) return null;
   try {
-    const { matricula, perfil, exp } = decodeToken(token);
+    const { matricula, perfil, nome, exp } = decodeToken(token);
     if (exp * 1000 < Date.now()) {
       removerToken();
       return null;
     }
-    return { token, matricula, perfil };
+    return { token, matricula, perfil, nome };
   } catch {
     removerToken();
     return null;

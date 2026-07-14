@@ -39,9 +39,12 @@ function navButtonStyle(active) {
   };
 }
 
-export default function Shell({ perfil, matricula, screen, setScreen, onLogout, children }) {
+const LABEL_PERFIL = { medico: "Médico", enfermeiro: "Enfermeiro" };
+
+export default function Shell({ perfil, matricula, nome, screen, setScreen, onLogout, children }) {
   const navItems = NAV_POR_PERFIL[perfil];
   const [title, subtitle] = TITULOS[screen]?.[perfil] || TITULOS[screen]?._ || ["", ""];
+  const identificacao = nome ? `${nome} (${LABEL_PERFIL[perfil]})` : LABEL_PERFIL[perfil];
 
   return (
     <div style={{ display: "flex", width: "100%", height: "100%" }}>
@@ -106,7 +109,7 @@ export default function Shell({ perfil, matricula, screen, setScreen, onLogout, 
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>{perfil === "medico" ? "Médico(a)" : "Enfermeiro(a)"}</div>
+              <div style={{ fontSize: 13, fontWeight: 700 }}>{identificacao}</div>
               <div style={{ fontSize: 11, color: "oklch(50% 0.018 258)" }}>Matrícula {matricula}</div>
             </div>
             <button

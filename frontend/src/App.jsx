@@ -36,8 +36,8 @@ export default function App() {
 
   function onLoginSuccess(token) {
     salvarToken(token);
-    const { matricula, perfil } = decodeToken(token);
-    setSessao({ token, matricula, perfil });
+    const { matricula, perfil, nome } = decodeToken(token);
+    setSessao({ token, matricula, perfil, nome });
     irPara("painel");
   }
 
@@ -69,7 +69,7 @@ export default function App() {
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "oklch(97% 0.006 258)", display: "flex", overflow: "hidden", boxSizing: "border-box" }}>
-      <Shell perfil={sessao.perfil} matricula={sessao.matricula} screen={screen} setScreen={onSetScreen} onLogout={onLogout}>
+      <Shell perfil={sessao.perfil} matricula={sessao.matricula} nome={sessao.nome} screen={screen} setScreen={onSetScreen} onLogout={onLogout}>
         {screen === "painel" && (
           <PainelScreen
             key={painelKey}
