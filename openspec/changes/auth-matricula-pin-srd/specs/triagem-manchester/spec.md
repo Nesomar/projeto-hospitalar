@@ -11,6 +11,14 @@ O sistema SHALL calcular a classificação de risco do paciente a partir dos sin
 - **WHEN** nenhum critério de Vermelho é atendido e (SpO2 < 94% OU FC > 120 bpm OU Temperatura ≥ 39,5°C OU dor ≥ 7)
 - **THEN** o sistema classifica o paciente como "Laranja", com meta de atendimento em até 10 minutos
 
+#### Scenario: Classificação Amarela
+- **WHEN** nenhum critério de Vermelho ou Laranja é atendido e (SpO2 < 96% OU FC > 100 bpm OU Temperatura ≥ 38°C OU dor ≥ 4)
+- **THEN** o sistema classifica o paciente como "Amarelo", com meta de atendimento em até 60 minutos
+
+#### Scenario: Classificação Verde
+- **WHEN** nenhum critério de Vermelho, Laranja ou Amarelo é atendido e (dor ≥ 1 OU FC > 90 bpm)
+- **THEN** o sistema classifica o paciente como "Verde", com meta de atendimento em até 120 minutos
+
 #### Scenario: Classificação Azul
 - **WHEN** nenhum sinal vital atende aos critérios de Vermelho, Laranja, Amarelo ou Verde
 - **THEN** o sistema classifica o paciente como "Azul", com meta de atendimento em até 240 minutos
