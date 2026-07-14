@@ -10,7 +10,7 @@ class Paciente(Base):
     id = Column(Integer, primary_key=True)
     nome = Column(String, nullable=False)
     cpf = Column(String(11), unique=True, nullable=False, index=True)
-    cns = Column(String(15), unique=True, nullable=True)
+    cns = Column(String(15), unique=True, nullable=False)
     data_nascimento = Column(Date, nullable=False)
     sexo = Column(String, nullable=True)
     telefone = Column(String, nullable=True)

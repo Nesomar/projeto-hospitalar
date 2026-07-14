@@ -13,9 +13,9 @@
 
 ## 3. Cadastro de Paciente (`cadastro-paciente`)
 
-- [ ] 3.1 Implementar endpoint `POST /api/pacientes` com validação de CPF (11 dígitos) e CNS (15 dígitos).
-- [ ] 3.2 Criar evolução automática do tipo "Cadastro" ao registrar paciente.
-- [ ] 3.3 Testes cobrindo os cenários de `specs/cadastro-paciente/spec.md`.
+- [x] 3.1 Implementar endpoint `POST /api/pacientes` com validação de CPF (11 dígitos) e CNS (15 dígitos).
+- [x] 3.2 Criar evolução automática do tipo "Cadastro" ao registrar paciente.
+- [x] 3.3 Testes cobrindo os cenários de `specs/cadastro-paciente/spec.md`.
 
 ## 4. Triagem — Protocolo de Manchester (`triagem-manchester`)
 
