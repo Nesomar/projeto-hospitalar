@@ -44,8 +44,8 @@
 
 ## 8. Front-end
 
-- [ ] 8.1 Recriar as telas do protótipo (`docs/prototipo/projeto/Prototipo Hospitalar.dc.html`) em React, substituindo o estado mockado por chamadas à API real.
-- [ ] 8.2 Atualizar tela de login para matrícula (6 dígitos) + PIN (4 dígitos), conforme já ajustado no protótipo.
+- [x] 8.1 Recriar as telas do protótipo (`docs/prototipo/projeto/Prototipo Hospitalar.dc.html`) em React, substituindo o estado mockado por chamadas à API real.
+- [x] 8.2 Atualizar tela de login para matrícula (6 dígitos) + PIN (4 dígitos), conforme já ajustado no protótipo.
 
 ## 9. Fechamento
 

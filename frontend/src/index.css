@@ -1,0 +1,34 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Manrope", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: oklch(24% 0.02 258);
+}
+
+a {
+  color: oklch(55% 0.14 258);
+  text-decoration: none;
+}
+a:hover {
+  color: oklch(45% 0.15 258);
+  text-decoration: underline;
+}
+
+input,
+select,
+textarea,
+button {
+  font-family: "Manrope", sans-serif;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid oklch(80% 0.06 258);
+}
+::placeholder {
+  color: oklch(68% 0.01 258);
+}
