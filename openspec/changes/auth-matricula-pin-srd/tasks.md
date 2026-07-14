@@ -19,10 +19,10 @@
 
 ## 4. Triagem — Protocolo de Manchester (`triagem-manchester`)
 
-- [ ] 4.1 Portar a lógica de `calcManchester` do protótipo (`docs/prototipo/projeto/Prototipo Hospitalar.dc.html`) para um serviço de back-end, seguindo a tabela de critérios em `docs/03-casos-uso.md` (UC001).
-- [ ] 4.2 Implementar endpoint de cálculo/confirmação de triagem, com validação de campos obrigatórios (PA, FC, Temp, SpO2).
-- [ ] 4.3 Ao confirmar, persistir `classificacao_risco` e atualizar status do paciente para "Aguardando Atendimento".
-- [ ] 4.4 Testes cobrindo os 5 cenários de cor com 100% de acurácia (`specs/triagem-manchester/spec.md`).
+- [x] 4.1 Portar a lógica de `calcManchester` do protótipo (`docs/prototipo/projeto/Prototipo Hospitalar.dc.html`) para um serviço de back-end, seguindo a tabela de critérios em `docs/03-casos-uso.md` (UC001).
+- [x] 4.2 Implementar endpoint de cálculo/confirmação de triagem, com validação de campos obrigatórios (PA, FC, Temp, SpO2).
+- [x] 4.3 Ao confirmar, persistir `classificacao_risco` e atualizar status do paciente para "Aguardando Atendimento".
+- [x] 4.4 Testes cobrindo os 5 cenários de cor com 100% de acurácia (`specs/triagem-manchester/spec.md`).
 
 ## 5. Prontuário (`prontuario`)
 
