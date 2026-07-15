@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes.atendimento import router as atendimento_router
 from app.api.routes.auth import router as auth_router
 from app.api.routes.pacientes import router as pacientes_router
 from app.api.routes.painel import router as painel_router
@@ -24,3 +25,4 @@ app.include_router(triagem_router)
 app.include_router(prontuario_router)
 app.include_router(prescricao_router)
 app.include_router(painel_router)
+app.include_router(atendimento_router)

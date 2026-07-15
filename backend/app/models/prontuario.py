@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 from app.core.database import Base
 
 CLASSIFICACOES_RISCO = ("vermelho", "laranja", "amarelo", "verde", "azul")
+STATUS_ATENDIMENTO = ("em_atendimento", "aguardando_exames", "alta")
 
 
 class Prontuario(Base):
@@ -15,6 +16,9 @@ class Prontuario(Base):
     classificacao_risco = Column(
         Enum(*CLASSIFICACOES_RISCO, name="classificacao_risco"), nullable=True
     )
+    status_atendimento = Column(
+        Enum(*STATUS_ATENDIMENTO, name="status_atendimento"), nullable=True
+    )
     pas = Column(Integer, nullable=True)
     pad = Column(Integer, nullable=True)
     fc = Column(Integer, nullable=True)
@@ -24,3 +28,18 @@ class Prontuario(Base):
     dor = Column(Integer, nullable=True)
 
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+
+_STATUS_LABELS = {
+    "em_atendimento": "Em Atendimento",
+    "aguardando_exames": "Aguardando Exames Complementares",
+    "alta": "Alta",
+}
+
+
+def status_efetivo(prontuario: "Prontuario") -> str:
+    if prontuario.status_atendimento:
+        return _STATUS_LABELS[prontuario.status_atendimento]
+    if prontuario.classificacao_risco:
+        return "Aguardando Atendimento"
+    return "Aguardando Triagem"

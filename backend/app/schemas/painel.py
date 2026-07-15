@@ -7,3 +7,7 @@ class PainelItem(BaseModel):
     classificacao_risco: str | None
     status: str
     pode_fazer_triagem: bool
+    pode_iniciar_atendimento: bool
+    pode_dar_alta: bool
+    pode_solicitar_exames: bool
+    pode_retomar_atendimento: bool
