@@ -54,5 +54,5 @@
 
 - [x] 6.1 Sincronizar a spec delta (`specs/painel-atendimento/spec.md` deste change) com
   `openspec/specs/painel-atendimento/spec.md` via `openspec-sync-specs`.
-- [ ] 6.2 Arquivar o change após merge, seguindo o fluxo por fase já em uso no projeto (branch → skills →
+- [x] 6.2 Arquivar o change após merge, seguindo o fluxo por fase já em uso no projeto (branch → skills →
   PR → sync develop).
