@@ -33,7 +33,7 @@
 
 ## 4. Specs e documentação
 
-- [ ] 4.1 Sincronizar `openspec/specs/atendimento-medico/spec.md` (nova capability) e
+- [x] 4.1 Sincronizar `openspec/specs/atendimento-medico/spec.md` (nova capability) e
       `openspec/specs/painel-atendimento/spec.md` (delta) após validação (via `openspec archive` no
       fechamento da fase)
 - [x] 4.2 Atualizar `docs/03-casos-uso.md` se necessário para refletir os UCs novos (iniciar atendimento,
