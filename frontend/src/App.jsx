@@ -7,6 +7,7 @@ import CadastroScreen from "./screens/CadastroScreen.jsx";
 import TriagemScreen from "./screens/TriagemScreen.jsx";
 import ProntuarioScreen from "./screens/ProntuarioScreen.jsx";
 import PrescricaoScreen from "./screens/PrescricaoScreen.jsx";
+import IniciarAtendimentoScreen from "./screens/IniciarAtendimentoScreen.jsx";
 import { decodeToken, carregarSessao, salvarToken, removerToken } from "./auth.js";
 import { setUnauthorizedHandler } from "./api.js";
 
@@ -77,11 +78,22 @@ export default function App() {
             showToast={showToast}
             onAbrirTriagem={(id) => irPara("triagem", id)}
             onAbrirProntuario={(id) => irPara("prontuario", id)}
+            onAbrirIniciarAtendimento={(id) => irPara("atendimento", id)}
           />
         )}
         {screen === "cadastro" && <CadastroScreen token={sessao.token} showToast={showToast} onCadastrado={voltarAoPainel} />}
         {screen === "triagem" && (
           <TriagemScreen
+            token={sessao.token}
+            showToast={showToast}
+            pacienteId={pacienteId}
+            onSelecionarPaciente={(id) => setPacienteId(id)}
+            onCancelar={() => setPacienteId(null)}
+            onConfirmado={voltarAoPainel}
+          />
+        )}
+        {screen === "atendimento" && (
+          <IniciarAtendimentoScreen
             token={sessao.token}
             showToast={showToast}
             pacienteId={pacienteId}

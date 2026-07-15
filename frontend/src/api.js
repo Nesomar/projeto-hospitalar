@@ -82,3 +82,23 @@ export function prescrever(token, pacienteId, dados) {
     body: dados,
   });
 }
+
+export function iniciarAtendimento(token, pacienteId) {
+  return request(`/api/pacientes/${pacienteId}/atendimento/iniciar`, { method: "POST", token });
+}
+
+export function darAlta(token, pacienteId) {
+  return request(`/api/pacientes/${pacienteId}/atendimento/alta`, { method: "POST", token });
+}
+
+export function solicitarExames(token, pacienteId, observacoes) {
+  return request(`/api/pacientes/${pacienteId}/atendimento/exames`, {
+    method: "POST",
+    token,
+    body: { observacoes: observacoes || undefined },
+  });
+}
+
+export function retomarAtendimento(token, pacienteId) {
+  return request(`/api/pacientes/${pacienteId}/atendimento/retomar`, { method: "POST", token });
+}

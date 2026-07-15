@@ -9,6 +9,7 @@ const NAV_POR_PERFIL = {
   ],
   medico: [
     { key: "painel", label: "Painel" },
+    { key: "atendimento", label: "Atendimento" },
     { key: "prontuario", label: "Prontuário" },
     { key: "prescricao", label: "Prescrição" },
   ],
@@ -21,6 +22,7 @@ const TITULOS = {
   },
   cadastro: { _: ["Cadastro de Paciente", "Registro de novo paciente no sistema."] },
   triagem: { _: ["Triagem", "Classificação de risco pelo Protocolo de Manchester."] },
+  atendimento: { _: ["Atendimento", "Início de atendimento médico após triagem."] },
   prontuario: { _: ["Prontuário", "Sinais vitais, evolução e prescrições do paciente."] },
   prescricao: { _: ["Prescrição", "Registro de medicamentos prescritos."] },
 };
