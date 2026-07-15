@@ -1,30 +1,70 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { COLORS, ACENTO } from "../colors.js";
-import { listarPainel } from "../api.js";
+import { darAlta, listarPainel, retomarAtendimento, solicitarExames } from "../api.js";
+import ConfirmModal from "../components/ConfirmModal.jsx";
 
 const FILTROS = [{ key: "todos", label: "Todos" }, ...Object.keys(COLORS).map((c) => ({ key: c, label: COLORS[c].label }))];
 
-export default function PainelScreen({ token, showToast, onAbrirTriagem, onAbrirProntuario }) {
+const ACAO_CONFIG = {
+  alta: {
+    title: "Confirmar Alta",
+    description: (nome) => `Confirma a alta do paciente ${nome}?`,
+    confirmLabel: "Confirmar Alta",
+    showObservacoes: false,
+    executar: (token, id) => darAlta(token, id),
+    mensagemSucesso: "Alta registrada.",
+  },
+  exames: {
+    title: "Solicitar Exames Complementares",
+    description: (nome) => `Solicitar exames complementares para ${nome}.`,
+    confirmLabel: "Solicitar Exames",
+    showObservacoes: true,
+    executar: (token, id, observacoes) => solicitarExames(token, id, observacoes),
+    mensagemSucesso: "Exames complementares solicitados.",
+  },
+  retomar: {
+    title: "Retomar Atendimento",
+    description: (nome) => `Confirma a retomada do atendimento de ${nome} após exames complementares?`,
+    confirmLabel: "Retomar Atendimento",
+    showObservacoes: false,
+    executar: (token, id) => retomarAtendimento(token, id),
+    mensagemSucesso: "Atendimento retomado.",
+  },
+};
+
+export default function PainelScreen({ token, showToast, onAbrirTriagem, onAbrirProntuario, onAbrirIniciarAtendimento }) {
   const [filtroCor, setFiltroCor] = useState("todos");
   const [pacientes, setPacientes] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [acaoModal, setAcaoModal] = useState(null);
 
-  useEffect(() => {
-    let cancelado = false;
+  const carregar = useCallback(() => {
     setCarregando(true);
-    listarPainel(token, filtroCor === "todos" ? undefined : filtroCor)
-      .then((dados) => {
-        if (!cancelado) setPacientes(dados);
-      })
+    return listarPainel(token, filtroCor === "todos" ? undefined : filtroCor)
+      .then((dados) => setPacientes(dados))
       .catch((err) => showToast(err.message || "Erro ao carregar painel."))
-      .finally(() => {
-        if (!cancelado) setCarregando(false);
-      });
-    return () => {
-      cancelado = true;
-    };
+      .finally(() => setCarregando(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtroCor, token]);
+
+  useEffect(() => {
+    carregar();
+  }, [carregar]);
+
+  async function onConfirmarAcao(observacoes) {
+    const { tipo, paciente } = acaoModal;
+    const config = ACAO_CONFIG[tipo];
+    try {
+      await config.executar(token, paciente.paciente_id, observacoes);
+      showToast(config.mensagemSucesso);
+      setAcaoModal(null);
+    } catch (err) {
+      showToast(err.message || "Erro ao executar ação.");
+      setAcaoModal(null);
+    } finally {
+      carregar();
+    }
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -105,7 +145,7 @@ export default function PainelScreen({ token, showToast, onAbrirTriagem, onAbrir
                 >
                   {p.status}
                 </div>
-                <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
                   {p.pode_fazer_triagem && (
                     <button
                       onClick={() => onAbrirTriagem(p.paciente_id)}
@@ -122,6 +162,78 @@ export default function PainelScreen({ token, showToast, onAbrirTriagem, onAbrir
                       }}
                     >
                       Fazer Triagem
+                    </button>
+                  )}
+                  {p.pode_iniciar_atendimento && (
+                    <button
+                      onClick={() => onAbrirIniciarAtendimento(p.paciente_id)}
+                      style={{
+                        border: "none",
+                        background: ACENTO,
+                        color: "#fff",
+                        padding: "9px 14px",
+                        borderRadius: 10,
+                        fontSize: 12.5,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Iniciar Atendimento
+                    </button>
+                  )}
+                  {p.pode_solicitar_exames && (
+                    <button
+                      onClick={() => setAcaoModal({ tipo: "exames", paciente: p })}
+                      style={{
+                        border: "1px solid oklch(88% 0.012 258)",
+                        background: "#fff",
+                        padding: "9px 14px",
+                        borderRadius: 10,
+                        fontSize: 12.5,
+                        fontWeight: 700,
+                        color: "oklch(40% 0.02 258)",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Solicitar Exames
+                    </button>
+                  )}
+                  {p.pode_dar_alta && (
+                    <button
+                      onClick={() => setAcaoModal({ tipo: "alta", paciente: p })}
+                      style={{
+                        border: "1px solid oklch(88% 0.012 258)",
+                        background: "#fff",
+                        padding: "9px 14px",
+                        borderRadius: 10,
+                        fontSize: 12.5,
+                        fontWeight: 700,
+                        color: "oklch(40% 0.02 258)",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Dar Alta
+                    </button>
+                  )}
+                  {p.pode_retomar_atendimento && (
+                    <button
+                      onClick={() => setAcaoModal({ tipo: "retomar", paciente: p })}
+                      style={{
+                        border: "none",
+                        background: ACENTO,
+                        color: "#fff",
+                        padding: "9px 14px",
+                        borderRadius: 10,
+                        fontSize: 12.5,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Retomar Atendimento
                     </button>
                   )}
                   <button
@@ -162,6 +274,17 @@ export default function PainelScreen({ token, showToast, onAbrirTriagem, onAbrir
           ))}
         </div>
       </div>
+
+      {acaoModal && (
+        <ConfirmModal
+          title={ACAO_CONFIG[acaoModal.tipo].title}
+          description={ACAO_CONFIG[acaoModal.tipo].description(acaoModal.paciente.nome)}
+          confirmLabel={ACAO_CONFIG[acaoModal.tipo].confirmLabel}
+          showObservacoes={ACAO_CONFIG[acaoModal.tipo].showObservacoes}
+          onConfirm={onConfirmarAcao}
+          onCancel={() => setAcaoModal(null)}
+        />
+      )}
     </div>
   );
 }
