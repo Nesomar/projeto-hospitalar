@@ -1,10 +1,11 @@
 from typing import Literal
 
 from fastapi import APIRouter
+from sqlalchemy import or_
 
 from app.api.deps import CurrentColaborador, DbDep
 from app.models.paciente import Paciente
-from app.models.prontuario import CLASSIFICACOES_RISCO, Prontuario
+from app.models.prontuario import CLASSIFICACOES_RISCO, Prontuario, status_efetivo
 from app.schemas.painel import PainelItem
 
 router = APIRouter(prefix="/api", tags=["painel"])
@@ -21,22 +22,33 @@ def listar_painel(
     registros = (
         db.query(Paciente, Prontuario)
         .join(Prontuario, Prontuario.paciente_id == Paciente.id)
-        .filter(Paciente.deleted_at.is_(None), Prontuario.deleted_at.is_(None))
+        .filter(
+            Paciente.deleted_at.is_(None),
+            Prontuario.deleted_at.is_(None),
+            or_(Prontuario.status_atendimento.is_(None), Prontuario.status_atendimento != "alta"),
+        )
         .all()
     )
 
+    e_medico = colaborador.perfil == "medico"
     itens = []
     for paciente, prontuario in registros:
         if cor is not None and prontuario.classificacao_risco != cor:
             continue
-        status = "Aguardando Atendimento" if prontuario.classificacao_risco else "Aguardando Triagem"
+        item_status = status_efetivo(prontuario)
         itens.append(
             PainelItem(
                 paciente_id=paciente.id,
                 nome=paciente.nome,
                 classificacao_risco=prontuario.classificacao_risco,
-                status=status,
-                pode_fazer_triagem=colaborador.perfil == "enfermeiro" and status == "Aguardando Triagem",
+                status=item_status,
+                pode_fazer_triagem=colaborador.perfil == "enfermeiro"
+                and item_status == "Aguardando Triagem",
+                pode_iniciar_atendimento=e_medico and item_status == "Aguardando Atendimento",
+                pode_dar_alta=e_medico and item_status == "Em Atendimento",
+                pode_solicitar_exames=e_medico and item_status == "Em Atendimento",
+                pode_retomar_atendimento=e_medico
+                and item_status == "Aguardando Exames Complementares",
             )
         )
 

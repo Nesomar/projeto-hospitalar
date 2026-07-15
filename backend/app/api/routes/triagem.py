@@ -1,9 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
-from app.api.deps import CurrentColaborador, DbDep
+from app.api.deps import CurrentColaborador, DbDep, get_prontuario_ativo
 from app.models.evolucao import Evolucao
-from app.models.paciente import Paciente
-from app.models.prontuario import Prontuario
 from app.schemas.triagem import ConfirmarTriagemRequest, SinaisVitais, TriagemResultado
 from app.services.manchester import calcular_manchester
 
@@ -25,19 +23,7 @@ def confirmar_triagem(
     db: DbDep,
     colaborador: CurrentColaborador,
 ) -> TriagemResultado:
-    paciente = (
-        db.query(Paciente).filter(Paciente.id == paciente_id, Paciente.deleted_at.is_(None)).first()
-    )
-    if paciente is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Paciente não encontrado")
-
-    prontuario = (
-        db.query(Prontuario)
-        .filter(Prontuario.paciente_id == paciente_id, Prontuario.deleted_at.is_(None))
-        .first()
-    )
-    if prontuario is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prontuário não encontrado")
+    prontuario = get_prontuario_ativo(paciente_id, db)
     if prontuario.classificacao_risco is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Paciente já triado")
 

@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.core.security import decode_access_token
 from app.models.colaborador import Colaborador
+from app.models.paciente import Paciente
+from app.models.prontuario import Prontuario
 
 bearer_scheme = HTTPBearer()
 
@@ -28,6 +30,26 @@ def get_colaborador_ativo(db: Session, matricula: str) -> Colaborador | None:
         .filter(Colaborador.matricula == matricula, Colaborador.deleted_at.is_(None))
         .first()
     )
+
+
+def get_prontuario_ativo(paciente_id: int, db: Session) -> Prontuario:
+    """Busca paciente + prontuario ativos, com lock de linha (FOR UPDATE) pra
+    evitar TOCTOU entre a checagem de status e o commit da transicao."""
+    paciente = (
+        db.query(Paciente).filter(Paciente.id == paciente_id, Paciente.deleted_at.is_(None)).first()
+    )
+    if paciente is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Paciente não encontrado")
+
+    prontuario = (
+        db.query(Prontuario)
+        .filter(Prontuario.paciente_id == paciente_id, Prontuario.deleted_at.is_(None))
+        .with_for_update()
+        .first()
+    )
+    if prontuario is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prontuário não encontrado")
+    return prontuario
 
 
 def get_current_colaborador(

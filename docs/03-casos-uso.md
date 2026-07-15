@@ -14,6 +14,10 @@ flowchart LR
         UC3([Prescrever Medicamento])
         UC4([Cadastrar Paciente])
         UC6([Consultar Painel de Atendimento])
+        UC7([Iniciar Atendimento])
+        UC8([Dar Alta])
+        UC9([Solicitar Exames Complementares])
+        UC10([Retomar Atendimento])
     end
 
     E --- UC5
@@ -25,6 +29,10 @@ flowchart LR
     E --- UC4
     E --- UC6
     M --- UC6
+    M --- UC7
+    M --- UC8
+    M --- UC9
+    M --- UC10
 ```
 
 ## 2. Especificação dos Casos de Uso
@@ -84,12 +92,35 @@ flowchart LR
 * **Fluxo**: Acessar Painel -> Filtrar por classificação de risco (opcional) -> Selecionar paciente para Triagem/Prontuário/Prescrição.
 * Detalhamento CARE: ver `[CARE-RF006]` em `02-requisitos.md`.
 
+### UC007 - Iniciar Atendimento
+* **Ator**: Médico.
+* **Fluxo**: Selecionar paciente com status "Aguardando Atendimento" -> Iniciar Atendimento.
+* **Regra**: só disponível para paciente já triado (`classificacao_risco` definida) e ainda sem atendimento iniciado; registra evolução "Início de Atendimento".
+
+### UC008 - Dar Alta
+* **Ator**: Médico.
+* **Fluxo**: Selecionar paciente "Em Atendimento" -> Dar Alta.
+* **Regra**: encerra o atendimento; paciente sai da listagem ativa do painel; registra evolução "Alta".
+
+### UC009 - Solicitar Exames Complementares
+* **Ator**: Médico.
+* **Fluxo**: Selecionar paciente "Em Atendimento" -> Solicitar Exames Complementares.
+* **Regra**: paciente permanece visível no painel como "Aguardando Exames Complementares"; registra evolução "Solicitação de Exames".
+
+### UC010 - Retomar Atendimento
+* **Ator**: Médico.
+* **Fluxo**: Selecionar paciente "Aguardando Exames Complementares" -> Retomar Atendimento.
+* **Regra**: paciente volta ao status "Em Atendimento"; registra evolução "Retomada de Atendimento".
+
 ## 3. Fluxo de Status do Paciente
 
 ```mermaid
 stateDiagram-v2
     [*] --> AguardandoTriagem: Cadastro (UC004)
     AguardandoTriagem --> AguardandoAtendimento: Triagem confirmada (UC001)
-    AguardandoAtendimento --> EmAtendimento: Atendimento médico iniciado
-    EmAtendimento --> [*]
+    AguardandoAtendimento --> EmAtendimento: Atendimento médico iniciado (UC007)
+    EmAtendimento --> Alta: Dar alta (UC008)
+    EmAtendimento --> AguardandoExamesComplementares: Solicitar exames (UC009)
+    AguardandoExamesComplementares --> EmAtendimento: Retomar atendimento (UC010)
+    Alta --> [*]
 ```
