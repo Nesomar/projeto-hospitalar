@@ -1,13 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
-from app.api.deps import DbDep, require_perfil
+from app.api.deps import DbDep, get_prontuario_ativo, require_perfil
 from app.models.colaborador import Colaborador
 from app.models.evolucao import Evolucao
-from app.models.paciente import Paciente
 from app.models.prescricao import Prescricao
-from app.models.prontuario import Prontuario
 from app.schemas.prescricao import PrescricaoCreate, PrescricaoOut
 
 router = APIRouter(prefix="/api", tags=["prescricao"])
@@ -26,19 +24,7 @@ def prescrever(
     db: DbDep,
     colaborador: MedicoAtual,
 ) -> Prescricao:
-    paciente = (
-        db.query(Paciente).filter(Paciente.id == paciente_id, Paciente.deleted_at.is_(None)).first()
-    )
-    if paciente is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Paciente não encontrado")
-
-    prontuario = (
-        db.query(Prontuario)
-        .filter(Prontuario.paciente_id == paciente_id, Prontuario.deleted_at.is_(None))
-        .first()
-    )
-    if prontuario is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prontuário não encontrado")
+    prontuario = get_prontuario_ativo(paciente_id, db)
 
     prescricao = Prescricao(
         prontuario_id=prontuario.id,

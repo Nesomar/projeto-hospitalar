@@ -2,33 +2,15 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.api.deps import DbDep, require_perfil
+from app.api.deps import DbDep, get_prontuario_ativo, require_perfil
 from app.models.colaborador import Colaborador
 from app.models.evolucao import Evolucao
-from app.models.paciente import Paciente
 from app.models.prontuario import Prontuario, status_efetivo
 from app.schemas.atendimento import AtendimentoStatus, SolicitarExamesRequest
 
 router = APIRouter(prefix="/api", tags=["atendimento"])
 
 MedicoAtual = Annotated[Colaborador, Depends(require_perfil("medico"))]
-
-
-def _get_prontuario(paciente_id: int, db: DbDep) -> Prontuario:
-    paciente = (
-        db.query(Paciente).filter(Paciente.id == paciente_id, Paciente.deleted_at.is_(None)).first()
-    )
-    if paciente is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Paciente não encontrado")
-
-    prontuario = (
-        db.query(Prontuario)
-        .filter(Prontuario.paciente_id == paciente_id, Prontuario.deleted_at.is_(None))
-        .first()
-    )
-    if prontuario is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prontuário não encontrado")
-    return prontuario
 
 
 def _transicionar(
@@ -64,7 +46,7 @@ def _transicionar(
 def iniciar_atendimento(
     paciente_id: int, db: DbDep, colaborador: MedicoAtual
 ) -> AtendimentoStatus:
-    prontuario = _get_prontuario(paciente_id, db)
+    prontuario = get_prontuario_ativo(paciente_id, db)
     if prontuario.classificacao_risco is None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Paciente ainda não foi triado"
@@ -82,7 +64,7 @@ def iniciar_atendimento(
 
 @router.post("/pacientes/{paciente_id}/atendimento/alta", response_model=AtendimentoStatus)
 def dar_alta(paciente_id: int, db: DbDep, colaborador: MedicoAtual) -> AtendimentoStatus:
-    prontuario = _get_prontuario(paciente_id, db)
+    prontuario = get_prontuario_ativo(paciente_id, db)
     return _transicionar(
         prontuario,
         db,
@@ -96,10 +78,13 @@ def dar_alta(paciente_id: int, db: DbDep, colaborador: MedicoAtual) -> Atendimen
 
 @router.post("/pacientes/{paciente_id}/atendimento/exames", response_model=AtendimentoStatus)
 def solicitar_exames(
-    paciente_id: int, payload: SolicitarExamesRequest, db: DbDep, colaborador: MedicoAtual
+    paciente_id: int,
+    db: DbDep,
+    colaborador: MedicoAtual,
+    payload: SolicitarExamesRequest = SolicitarExamesRequest(),
 ) -> AtendimentoStatus:
-    prontuario = _get_prontuario(paciente_id, db)
-    observacoes = payload.observacoes or "sem observações"
+    prontuario = get_prontuario_ativo(paciente_id, db)
+    observacoes = payload.observacoes if payload.observacoes is not None else "sem observações"
     return _transicionar(
         prontuario,
         db,
@@ -115,7 +100,7 @@ def solicitar_exames(
 def retomar_atendimento(
     paciente_id: int, db: DbDep, colaborador: MedicoAtual
 ) -> AtendimentoStatus:
-    prontuario = _get_prontuario(paciente_id, db)
+    prontuario = get_prontuario_ativo(paciente_id, db)
     return _transicionar(
         prontuario,
         db,

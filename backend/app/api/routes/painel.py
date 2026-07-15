@@ -30,12 +30,12 @@ def listar_painel(
         .all()
     )
 
+    e_medico = colaborador.perfil == "medico"
     itens = []
     for paciente, prontuario in registros:
         if cor is not None and prontuario.classificacao_risco != cor:
             continue
         item_status = status_efetivo(prontuario)
-        e_medico = colaborador.perfil == "medico"
         itens.append(
             PainelItem(
                 paciente_id=paciente.id,
