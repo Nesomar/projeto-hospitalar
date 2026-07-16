@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 
-from app.api.deps import CurrentColaborador, DbDep
+from app.api.deps import ClinicoAtual, DbDep
 from app.models.evolucao import Evolucao
 from app.models.paciente import Paciente
 from app.models.prescricao import Prescricao
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api", tags=["prontuario"])
 def consultar_prontuario(
     paciente_id: int,
     db: DbDep,
-    colaborador: CurrentColaborador,
+    colaborador: ClinicoAtual,
 ) -> ProntuarioResponse:
     paciente = (
         db.query(Paciente).filter(Paciente.id == paciente_id, Paciente.deleted_at.is_(None)).first()

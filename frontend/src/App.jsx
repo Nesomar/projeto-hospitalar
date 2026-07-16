@@ -8,12 +8,13 @@ import TriagemScreen from "./screens/TriagemScreen.jsx";
 import ProntuarioScreen from "./screens/ProntuarioScreen.jsx";
 import PrescricaoScreen from "./screens/PrescricaoScreen.jsx";
 import IniciarAtendimentoScreen from "./screens/IniciarAtendimentoScreen.jsx";
+import GestaoColaboradoresScreen from "./screens/GestaoColaboradoresScreen.jsx";
 import { decodeToken, carregarSessao, salvarToken, removerToken } from "./auth.js";
 import { setUnauthorizedHandler } from "./api.js";
 
 export default function App() {
   const [sessao, setSessao] = useState(() => carregarSessao());
-  const [screen, setScreenState] = useState("painel");
+  const [screen, setScreenState] = useState(() => (carregarSessao()?.perfil === "administrador" ? "gestao" : "painel"));
   const [pacienteId, setPacienteId] = useState(null);
   const [painelKey, setPainelKey] = useState(0);
   const [toastMsg, setToastMsg] = useState(null);
@@ -39,7 +40,7 @@ export default function App() {
     salvarToken(token);
     const { matricula, perfil, nome } = decodeToken(token);
     setSessao({ token, matricula, perfil, nome });
-    irPara("painel");
+    irPara(perfil === "administrador" ? "gestao" : "painel");
   }
 
   function onLogout() {
@@ -82,6 +83,7 @@ export default function App() {
           />
         )}
         {screen === "cadastro" && <CadastroScreen token={sessao.token} showToast={showToast} onCadastrado={voltarAoPainel} />}
+        {screen === "gestao" && <GestaoColaboradoresScreen token={sessao.token} showToast={showToast} />}
         {screen === "triagem" && (
           <TriagemScreen
             token={sessao.token}

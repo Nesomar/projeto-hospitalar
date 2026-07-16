@@ -13,6 +13,7 @@ const NAV_POR_PERFIL = {
     { key: "prontuario", label: "Prontuário" },
     { key: "prescricao", label: "Prescrição" },
   ],
+  administrador: [{ key: "gestao", label: "Cadastro de Colaborador" }],
 };
 
 const TITULOS = {
@@ -25,6 +26,7 @@ const TITULOS = {
   atendimento: { _: ["Atendimento", "Início de atendimento médico após triagem."] },
   prontuario: { _: ["Prontuário", "Sinais vitais, evolução e prescrições do paciente."] },
   prescricao: { _: ["Prescrição", "Registro de medicamentos prescritos."] },
+  gestao: { _: ["Cadastro de Colaborador", "Registro de novo enfermeiro ou médico no sistema."] },
 };
 
 function navButtonStyle(active) {
@@ -41,7 +43,7 @@ function navButtonStyle(active) {
   };
 }
 
-const LABEL_PERFIL = { medico: "Médico", enfermeiro: "Enfermeiro" };
+const LABEL_PERFIL = { medico: "Médico", enfermeiro: "Enfermeiro", administrador: "Administrador" };
 
 export default function Shell({ perfil, matricula, nome, screen, setScreen, onLogout, children }) {
   const navItems = NAV_POR_PERFIL[perfil];
