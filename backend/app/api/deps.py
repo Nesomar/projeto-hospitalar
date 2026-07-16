@@ -89,3 +89,6 @@ def require_perfil(*perfis_permitidos: str) -> Callable[[Colaborador], Colaborad
         return colaborador
 
     return checker
+
+
+ClinicoAtual = Annotated[Colaborador, Depends(require_perfil("enfermeiro", "medico"))]

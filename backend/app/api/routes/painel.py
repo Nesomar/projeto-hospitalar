@@ -3,7 +3,7 @@ from typing import Literal
 from fastapi import APIRouter
 from sqlalchemy import or_
 
-from app.api.deps import CurrentColaborador, DbDep
+from app.api.deps import ClinicoAtual, DbDep
 from app.models.paciente import Paciente
 from app.models.prontuario import CLASSIFICACOES_RISCO, Prontuario, status_efetivo
 from app.schemas.painel import PainelItem
@@ -16,7 +16,7 @@ ORDEM_GRAVIDADE = {cor: indice for indice, cor in enumerate(CLASSIFICACOES_RISCO
 @router.get("/painel", response_model=list[PainelItem])
 def listar_painel(
     db: DbDep,
-    colaborador: CurrentColaborador,
+    colaborador: ClinicoAtual,
     cor: Literal[*CLASSIFICACOES_RISCO] | None = None,
 ) -> list[PainelItem]:
     registros = (

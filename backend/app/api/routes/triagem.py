@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 
-from app.api.deps import CurrentColaborador, DbDep, get_prontuario_ativo
+from app.api.deps import ClinicoAtual, DbDep, get_prontuario_ativo
 from app.models.evolucao import Evolucao
 from app.schemas.triagem import ConfirmarTriagemRequest, SinaisVitais, TriagemResultado
 from app.services.manchester import calcular_manchester
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api", tags=["triagem"])
 
 
 @router.post("/triagem/calcular", response_model=TriagemResultado)
-def calcular_triagem(payload: SinaisVitais, _colaborador: CurrentColaborador) -> TriagemResultado:
+def calcular_triagem(payload: SinaisVitais, _colaborador: ClinicoAtual) -> TriagemResultado:
     resultado = calcular_manchester(
         pas=payload.pas, fc=payload.fc, temp=payload.temp, spo2=payload.spo2, dor=payload.dor
     )
@@ -21,7 +21,7 @@ def confirmar_triagem(
     paciente_id: int,
     payload: ConfirmarTriagemRequest,
     db: DbDep,
-    colaborador: CurrentColaborador,
+    colaborador: ClinicoAtual,
 ) -> TriagemResultado:
     prontuario = get_prontuario_ativo(paciente_id, db)
     if prontuario.classificacao_risco is not None:

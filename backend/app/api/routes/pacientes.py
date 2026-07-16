@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
-from app.api.deps import CurrentColaborador, DbDep
+from app.api.deps import ClinicoAtual, DbDep
 from app.models.evolucao import Evolucao
 from app.models.paciente import Paciente
 from app.models.prontuario import Prontuario
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api", tags=["pacientes"])
 def cadastrar_paciente(
     payload: PacienteCreate,
     db: DbDep,
-    colaborador: CurrentColaborador,
+    colaborador: ClinicoAtual,
 ) -> Paciente:
     paciente = Paciente(
         nome=payload.nome,

@@ -59,11 +59,27 @@ def db_session():
 def auth_headers(db_session):
     """Simula o bootstrap: cria um colaborador direto no banco (como o
     scripts/seed_colaborador.py faria) e retorna um header Authorization
-    valido, ja que POST /api/colaboradores agora exige autenticacao."""
+    valido para um perfil clinico (medico). Usado pela maioria dos testes de
+    rotas clinicas (pacientes/painel/prontuario/triagem/atendimento/prescricao).
+    Para testar o cadastro de colaborador (POST /api/colaboradores), que exige
+    perfil administrador, use a fixture admin_headers."""
     bootstrap = Colaborador(
         matricula="000001", pin_hash=hash_pin("0000"), nome="Bootstrap", perfil="medico"
     )
     db_session.add(bootstrap)
     db_session.commit()
     token = create_access_token(subject=bootstrap.matricula, perfil=bootstrap.perfil)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def admin_headers(db_session):
+    """Colaborador com perfil administrador, para testar o cadastro de
+    colaborador (POST /api/colaboradores) e a restricao cruzada de AC-9."""
+    admin = Colaborador(
+        matricula="900000", pin_hash=hash_pin("0000"), nome="Admin Bootstrap", perfil="administrador"
+    )
+    db_session.add(admin)
+    db_session.commit()
+    token = create_access_token(subject=admin.matricula, perfil=admin.perfil)
     return {"Authorization": f"Bearer {token}"}

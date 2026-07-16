@@ -102,3 +102,7 @@ export function solicitarExames(token, pacienteId, observacoes) {
 export function retomarAtendimento(token, pacienteId) {
   return request(`/api/pacientes/${pacienteId}/atendimento/retomar`, { method: "POST", token });
 }
+
+export function cadastrarColaborador(token, dados) {
+  return request("/api/colaboradores", { method: "POST", token, body: dados });
+}
