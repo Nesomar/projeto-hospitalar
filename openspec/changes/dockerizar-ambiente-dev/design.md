@@ -98,6 +98,24 @@ dispensar o polling — fica como possível otimização futura, fora de escopo 
   já garante que o schema está atualizado antes do seed rodar; se o script quebrar por outro motivo,
   fica visível no log do container mesmo com exit code absorvido (nenhum `2>&1 > /dev/null`
   aplicado, só o exit code é ignorado).
+- **Credenciais de dev com default fixo** (Postgres `upa_user`/`upa_password`, admin
+  `000001`/`1234`) → sinalizado por review automática de segurança como "hardcoded-credentials".
+  São valores de desenvolvimento local, não secrets de produção (mesmo padrão que já existia no
+  `docker-compose.yml` original, antes deste change, pro serviço `postgres`). Mitigação aplicada:
+  extraídos pra variáveis de ambiente com default (`${POSTGRES_PASSWORD:-upa_password}` no compose,
+  `${ADMIN_PIN:-1234}` no entrypoint), documentadas em `.env.example` (raiz) — elimina a duplicação
+  literal da senha em dois lugares do compose e permite sobrescrever sem editar código versionado.
+  Não removido o default: sem ele, `docker compose up` deixaria de ser um comando único (voltaria a
+  exigir configurar credenciais antes de subir), contrariando o objetivo central do change.
+- **Containers rodam como root** (sem `USER` nos Dockerfiles) → sinalizado por review automática
+  como "container-privilege". Decisão: mantido de propósito. Rodar como usuário não-root exigiria
+  alinhar UID/GID do container com o do host pra escrita no bind mount (`./backend:/app`,
+  `./frontend:/app`) funcionar sem erro de permissão — variável por máquina/SO (especialmente
+  Windows), adicionando complexidade real sem benefício de segurança nesse contexto: os containers
+  só existem na máquina do próprio desenvolvedor, não recebem tráfego externo nem dados de
+  terceiros. Hardening de container (`USER`, capabilities, read-only rootfs) é hardening de
+  produção — explicitamente fora de escopo (ver Non-Goals). Revisitar se este compose algum dia for
+  reusado como base pra imagem publicada ou ambiente compartilhado.
 
 ## Migration Plan
 

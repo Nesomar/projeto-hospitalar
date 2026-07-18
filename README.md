@@ -23,6 +23,11 @@ cp frontend/.env.example frontend/.env
 docker compose up
 ```
 
+As credenciais do Postgres local e do admin bootstrap (matrícula `000001` / PIN `1234`) têm
+default fixo, só pra desenvolvimento — nunca use esses valores fora da sua máquina. Pra
+sobrescrever, copie `.env.example` (raiz) para `.env` e ajuste `POSTGRES_PASSWORD`,
+`ADMIN_MATRICULA`, `ADMIN_PIN`, etc.
+
 Isso sobe três serviços:
 
 - **postgres** — banco de dados, com schema já atualizado (`alembic upgrade head` roda automático)
