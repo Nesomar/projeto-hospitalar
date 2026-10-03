@@ -60,10 +60,10 @@
 
 ## 6. Validação e docs
 
-- [ ] 6.1 Fluxo manual:
+- [x] 6.1 Fluxo manual:
   - cadastrar paciente, triar, atender e dar alta;
   - recadastrar o mesmo CPF e abrir novo atendimento;
   - triar e iniciar;
   - o posto mostra a visita anterior.
-- [ ] 6.2 Atualizar `docs/03-casos-uso.md` (retorno de paciente e consulta de histórico) e
+- [x] 6.2 Atualizar `docs/03-casos-uso.md` (retorno de paciente e consulta de histórico) e
   `docs/04-modelo-dados.md` (prontuário = episódio, índice de unicidade do ativo).
