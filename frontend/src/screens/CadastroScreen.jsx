@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { s } from "../styles.js";
-import { cadastrarPaciente } from "../api.js";
+import { abrirNovoAtendimento, ApiError, buscarPacientePorCpf, cadastrarPaciente } from "../api.js";
 
 function defaultForm() {
   return { nome: "", cpf: "", cns: "", data_nascimento: "", sexo: "F", telefone: "" };
@@ -20,6 +20,8 @@ export default function CadastroScreen({ token, showToast, onCadastrado }) {
   const [erroCpf, setErroCpf] = useState(false);
   const [erroCns, setErroCns] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  // Paciente já cadastrado (CPF repetido): oferece abrir novo atendimento em vez de só mostrar o erro.
+  const [retorno, setRetorno] = useState(null);
 
   function update(campo, valor) {
     setForm((f) => ({ ...f, [campo]: valor }));
@@ -51,10 +53,72 @@ export default function CadastroScreen({ token, showToast, onCadastrado }) {
       setForm(defaultForm());
       onCadastrado();
     } catch (err) {
-      showToast(err.message || "Erro ao cadastrar paciente.");
+      if (err instanceof ApiError && err.status === 409) {
+        await tratarCpfJaCadastrado(cpfDigits, err.message);
+      } else {
+        showToast(err.message || "Erro ao cadastrar paciente.");
+      }
     } finally {
       setEnviando(false);
     }
+  }
+
+  async function tratarCpfJaCadastrado(cpfDigits, mensagem) {
+    try {
+      const [paciente] = await buscarPacientePorCpf(token, cpfDigits);
+      if (paciente) setRetorno(paciente);
+      else showToast(mensagem); // conflito só de CNS: não há paciente por CPF
+    } catch (e) {
+      showToast(e.message || mensagem);
+    }
+  }
+
+  async function onAbrirAtendimento() {
+    setEnviando(true);
+    try {
+      await abrirNovoAtendimento(token, retorno.id);
+      showToast("Novo atendimento aberto.");
+      setRetorno(null);
+      setForm(defaultForm());
+      onCadastrado();
+    } catch (err) {
+      showToast(err.message || "Erro ao abrir novo atendimento.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  if (retorno) {
+    return (
+      <div style={{ ...s.card, maxWidth: 640, display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ fontSize: 15, fontWeight: 700 }}>Paciente já cadastrado</div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700 }}>{retorno.nome}</div>
+          <div style={{ fontSize: 13, color: "oklch(45% 0.02 258)", marginTop: 4 }}>
+            Nascimento: {retorno.data_nascimento.split("-").reverse().join("/")}
+          </div>
+        </div>
+        {retorno.atendimento_ativo ? (
+          <div role="status" style={{ fontSize: 14, fontWeight: 600, color: "#B45309" }}>
+            Paciente já está em atendimento.
+          </div>
+        ) : (
+          <div style={{ fontSize: 13.5, color: "oklch(40% 0.02 258)" }}>
+            O paciente retorna à unidade. Abra um novo atendimento para ele aguardar a triagem.
+          </div>
+        )}
+        <div style={{ display: "flex", gap: 12 }}>
+          {!retorno.atendimento_ativo && (
+            <button onClick={onAbrirAtendimento} disabled={enviando} style={{ ...s.btnPrimary, padding: "12px 22px" }}>
+              {enviando ? "Abrindo..." : "Abrir novo atendimento"}
+            </button>
+          )}
+          <button onClick={() => setRetorno(null)} disabled={enviando} style={s.btnSecondary}>
+            Voltar ao cadastro
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
