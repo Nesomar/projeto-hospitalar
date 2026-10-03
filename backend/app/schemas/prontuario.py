@@ -61,3 +61,14 @@ class ProntuarioResponse(BaseModel):
     pode_dar_alta: bool
     pode_solicitar_exames: bool
     pode_retomar_atendimento: bool
+
+
+class AtendimentoAnterior(BaseModel):
+    prontuario_id: int
+    data_entrada: datetime
+    data_alta: datetime | None
+    classificacao_risco: str | None
+    queixa: str | None
+    sinais_vitais: SinaisVitaisAtuais
+    evolucoes: list[EvolucaoItem]
+    prescricoes: list[PrescricaoItem]

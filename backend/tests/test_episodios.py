@@ -118,3 +118,35 @@ def test_prescricao_sem_atendimento_ativo_retorna_409(client, auth_headers):
     )
     assert resp.status_code == 409
     assert resp.json()["detail"] == "Paciente não possui atendimento ativo"
+
+
+def test_historico_com_duas_visitas_encerradas(client, auth_headers, db_session):
+    enf = _enfermeiro(db_session)
+    pid = _cadastrar(client, auth_headers)
+    _dar_alta(client, auth_headers, pid)
+    _novo_atendimento(client, enf, pid)
+    _dar_alta(client, auth_headers, pid)
+    _novo_atendimento(client, enf, pid)  # terceiro, ativo: fora do histórico
+
+    resp = client.get(f"/api/pacientes/{pid}/atendimentos", headers=auth_headers)
+    assert resp.status_code == 200
+    itens = resp.json()
+    assert len(itens) == 2
+    assert itens[0]["prontuario_id"] > itens[1]["prontuario_id"]
+    for item in itens:
+        assert item["data_alta"] is not None
+        assert item["sinais_vitais"]["pas"] == 100
+        assert {e["tipo"] for e in item["evolucoes"]} >= {"Cadastro", "Alta"}
+    ativo = db_session.query(Prontuario).filter_by(paciente_id=pid, status_atendimento=None).one()
+    assert ativo.id not in [i["prontuario_id"] for i in itens]
+
+
+def test_historico_primeira_visita_e_vazio(client, auth_headers):
+    pid = _cadastrar(client, auth_headers)
+    resp = client.get(f"/api/pacientes/{pid}/atendimentos", headers=auth_headers)
+    assert resp.status_code == 200
+    assert resp.json() == []
+
+
+def test_historico_paciente_inexistente_retorna_404(client, auth_headers):
+    assert client.get("/api/pacientes/999/atendimentos", headers=auth_headers).status_code == 404

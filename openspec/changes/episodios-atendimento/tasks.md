@@ -34,11 +34,11 @@
 
 ## 3. Backend — histórico
 
-- [ ] 3.1 Criar o schema `AtendimentoAnterior`: `prontuario_id`, `data_entrada`, `data_alta`,
+- [x] 3.1 Criar o schema `AtendimentoAnterior`: `prontuario_id`, `data_entrada`, `data_alta`,
   `classificacao_risco`, `queixa`, `sinais_vitais`, `evolucoes`, `prescricoes`.
-- [ ] 3.2 Criar `GET /api/pacientes/{id}/atendimentos` (`ClinicoAtual`), retornando os episódios com "Alta",
+- [x] 3.2 Criar `GET /api/pacientes/{id}/atendimentos` (`ClinicoAtual`), retornando os episódios com "Alta",
   do mais recente ao mais antigo. `data_alta` vem da evolução "Alta".
-- [ ] 3.3 Testes: paciente com 2 visitas encerradas devolve ordem e conteúdo corretos e não inclui o
+- [x] 3.3 Testes: paciente com 2 visitas encerradas devolve ordem e conteúdo corretos e não inclui o
   episódio ativo; primeira visita devolve lista vazia.
 
 ## 4. Frontend — cadastro com retorno
