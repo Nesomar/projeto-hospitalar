@@ -53,6 +53,8 @@ erDiagram
 
 ## 2. Dicionário de Dados
 * Tabelas: PACIENTES, PRONTUARIOS, EVOLUCOES, PRESCRICOES, COLABORADORES.
+* **PRONTUARIO = episódio de atendimento.** Um paciente tem N prontuários (um por visita). Cada novo atendimento cria um novo prontuário e os anteriores ficam como histórico.
+* **Unicidade do atendimento ativo**: no máximo um prontuário ativo (não deletado e com `status_atendimento` diferente de `alta`) por paciente, garantido pelo índice único parcial `uq_prontuario_ativo_por_paciente` (migração `0006`).
 
 ### [SCHEMA] Esquema JSON - Paciente
 ```json

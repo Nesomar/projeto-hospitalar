@@ -60,6 +60,7 @@ flowchart LR
 ### UC002 - Consultar Prontuário
 * **Ator**: Enfermeiro, Médico.
 * **Fluxo**: Selecionar paciente -> Visualizar sinais vitais da triagem, linha do tempo de evolução e prescrições.
+* **Regra**: a consulta mostra o atendimento ativo ou, sem ativo, o mais recente. Atendimentos anteriores não se misturam na linha do tempo.
 
 #### [CARE-UC002] Implementação da Consulta de Prontuário
 * **Context**: Paciente com pelo menos um registro (cadastro, triagem ou atendimento).
@@ -80,6 +81,8 @@ flowchart LR
 ### UC004 - Cadastrar Paciente
 * **Ator**: Enfermeiro.
 * **Fluxo**: Preencher Nome, CPF, CNS, Data de Nascimento, Sexo, Telefone -> Cadastrar Paciente.
+* **Retorno de paciente**: se o CPF já estiver cadastrado, a tela exibe nome e data de nascimento do paciente. Sem atendimento ativo, oferece "Abrir novo atendimento"; com atendimento ativo, informa "Paciente já está em atendimento".
+* **Regra**: abrir novo atendimento cria um novo prontuário "Aguardando Triagem" e registra a evolução "Cadastro" ("Retorno do paciente, aguardando triagem."). Apenas o enfermeiro executa essa ação.
 * Detalhamento CARE: ver `[CARE-RF002]` em `02-requisitos.md`.
 
 ### UC005 - Autenticar-se
@@ -113,6 +116,11 @@ flowchart LR
 * **Fluxo**: Selecionar paciente "Aguardando Exames Complementares" -> Retomar Atendimento.
 * **Regra**: paciente volta ao status "Em Atendimento"; registra evolução "Retomada de Atendimento".
 
+### UC011 - Consultar Atendimentos Anteriores
+* **Ator**: Enfermeiro, Médico.
+* **Fluxo**: Abrir o posto de atendimento do paciente -> seção "Atendimentos anteriores" -> expandir uma visita para ver sinais vitais, prescrições e evolução.
+* **Regra**: lista só atendimentos encerrados ("Alta"), do mais recente ao mais antigo, com data de entrada, data da alta, cor de risco e queixa. Primeira visita exibe "Primeiro atendimento do paciente nesta unidade.".
+
 ## 3. Fluxo de Status do Paciente
 
 ```mermaid
@@ -123,5 +131,5 @@ stateDiagram-v2
     EmAtendimento --> Alta: Dar alta (UC008)
     EmAtendimento --> AguardandoExamesComplementares: Solicitar exames (UC009)
     AguardandoExamesComplementares --> EmAtendimento: Retomar atendimento (UC010)
-    Alta --> [*]
+    Alta --> AguardandoTriagem: Retorno do paciente, novo atendimento (UC004)
 ```
