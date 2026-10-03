@@ -30,10 +30,10 @@
 
 ## 4. Frontend — peças compartilhadas
 
-- [ ] 4.1 Mover `ACAO_CONFIG` de `PainelScreen.jsx` para `frontend/src/acoesAtendimento.js` e adicionar a
+- [x] 4.1 Mover `ACAO_CONFIG` de `PainelScreen.jsx` para `frontend/src/acoesAtendimento.js` e adicionar a
   entrada `iniciar` (sem observações, chama `iniciarAtendimento`). O `PainelScreen` passa a importar o
   módulo, sem mudança de comportamento.
-- [ ] 4.2 Extrair de `PrescricaoScreen.jsx` o componente `components/PrescricaoForm.jsx`, com campos,
+- [x] 4.2 Extrair de `PrescricaoScreen.jsx` o componente `components/PrescricaoForm.jsx`, com campos,
   validação "Informe medicamento e dosagem." e submit via `prescrever()`. A `PrescricaoScreen` passa a
   usá-lo, sem mudança de comportamento.
 
