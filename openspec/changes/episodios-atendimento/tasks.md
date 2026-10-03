@@ -52,11 +52,11 @@
 
 ## 5. Frontend — histórico no posto
 
-- [ ] 5.1 Em `AtendimentoScreen.jsx`, carregar `listarAtendimentosAnteriores` junto com o prontuário.
-- [ ] 5.2 Criar a seção "Atendimentos anteriores", com itens resumidos (datas de entrada e alta, cor e
+- [x] 5.1 Em `AtendimentoScreen.jsx`, carregar `listarAtendimentosAnteriores` junto com o prontuário.
+- [x] 5.2 Criar a seção "Atendimentos anteriores", com itens resumidos (datas de entrada e alta, cor e
   queixa) expansíveis para sinais vitais, evoluções e prescrições. Reaproveitar os blocos do change A.
-- [ ] 5.3 Sem histórico, exibir "Primeiro atendimento do paciente nesta unidade.".
-- [ ] 5.4 Seguir o padrão visual existente, usando `frontend-design` + `ui-ux-pro-max`.
+- [x] 5.3 Sem histórico, exibir "Primeiro atendimento do paciente nesta unidade.".
+- [x] 5.4 Seguir o padrão visual existente, usando `frontend-design` + `ui-ux-pro-max`.
 
 ## 6. Validação e docs
 

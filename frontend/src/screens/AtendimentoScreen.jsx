@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ACENTO, COLORS, calcIdade, formatCNS, formatCPF } from "../colors.js";
-import { consultarProntuario, listarPainel } from "../api.js";
+import { consultarProntuario, listarAtendimentosAnteriores, listarPainel } from "../api.js";
 import { ACAO_CONFIG } from "../acoesAtendimento.js";
 import ConfirmModal from "../components/ConfirmModal.jsx";
 import PrescricaoForm from "../components/PrescricaoForm.jsx";
@@ -40,6 +40,121 @@ function Vital({ label, valor, unidade }) {
       </div>
       <div style={{ fontSize: 17, fontWeight: 800, marginTop: 2, fontVariantNumeric: "tabular-nums" }}>{valor ?? "—"}</div>
     </div>
+  );
+}
+
+const dataHora = (iso) => new Date(iso).toLocaleString("pt-BR");
+
+function PrescricaoLinha({ rx }) {
+  return (
+    <div style={{ padding: "10px 0", borderTop: "1px solid oklch(94% 0.008 258)" }}>
+      <div style={{ fontSize: 13.5, fontWeight: 700 }}>
+        {rx.medicamento} — {rx.dosagem}
+      </div>
+      <div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>
+        {rx.via} · {rx.frequencia || "—"} · {dataHora(rx.data)} · {rx.responsavel_matricula}
+      </div>
+    </div>
+  );
+}
+
+function EvolucaoLinha({ e }) {
+  return (
+    <li style={{ paddingBottom: 18, borderLeft: "2px solid oklch(90% 0.012 258)", marginLeft: 4, paddingLeft: 18, position: "relative" }}>
+      <div style={{ position: "absolute", left: -6, top: 2, width: 10, height: 10, borderRadius: "50%", background: ACENTO }} />
+      <div style={{ fontSize: 12, color: MUTED }}>
+        {dataHora(e.data)} · {e.responsavel_matricula}
+      </div>
+      <div style={{ fontSize: 11.5, fontWeight: 700, color: "oklch(45% 0.02 258)", marginTop: 2 }}>{e.tipo}</div>
+      <div style={{ fontSize: 13, marginTop: 4, lineHeight: 1.5 }}>{e.descricao}</div>
+    </li>
+  );
+}
+
+function AtendimentoAnteriorItem({ item }) {
+  const [aberto, setAberto] = useState(false);
+  const risco = infoRisco(item.classificacao_risco);
+  const sv = item.sinais_vitais;
+  const painelId = `atendimento-anterior-${item.prontuario_id}`;
+  return (
+    <li style={{ border: BORDA, borderLeft: `5px solid ${risco.bg}`, borderRadius: 14, overflow: "hidden" }}>
+      <button
+        onClick={() => setAberto((a) => !a)}
+        aria-expanded={aberto}
+        aria-controls={painelId}
+        style={{ width: "100%", display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: "#fff", border: "none", cursor: "pointer", textAlign: "left", minHeight: 44, font: "inherit" }}
+      >
+        <span style={{ padding: "4px 10px", borderRadius: 999, background: risco.bg, color: risco.text, fontSize: 11.5, fontWeight: 800, flexShrink: 0 }}>{risco.label}</span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: 13, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
+            {dataHora(item.data_entrada)} → {item.data_alta ? dataHora(item.data_alta) : "—"}
+          </span>
+          <span style={{ display: "block", fontSize: 12.5, color: MUTED, marginTop: 2 }}>{item.queixa || "Sem queixa registrada"}</span>
+        </span>
+        <span aria-hidden="true" style={{ color: MUTED, fontSize: 12 }}>{aberto ? "▲" : "▼"}</span>
+      </button>
+      {aberto && (
+        <div id={painelId} style={{ padding: "4px 16px 16px", borderTop: "1px solid oklch(94% 0.008 258)", display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(84px, 1fr))", gap: 10, marginTop: 12 }}>
+            <Vital label="PA" valor={sv.pas != null ? `${sv.pas}/${sv.pad ?? "—"}` : null} unidade="mmHg" />
+            <Vital label="FC" valor={sv.fc} unidade="bpm" />
+            <Vital label="FR" valor={sv.fr} unidade="irpm" />
+            <Vital label="Temp." valor={sv.temp} unidade="°C" />
+            <Vital label="SpO2" valor={sv.spo2} unidade="%" />
+            <Vital label="Dor" valor={sv.dor} unidade="0–10" />
+          </div>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "oklch(45% 0.02 258)" }}>Prescrições</div>
+            {item.prescricoes.map((rx) => (
+              <PrescricaoLinha key={rx.id} rx={rx} />
+            ))}
+            {item.prescricoes.length === 0 && <div style={{ fontSize: 13, color: "oklch(55% 0.015 258)", marginTop: 6 }}>Nenhuma prescrição registrada.</div>}
+          </div>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "oklch(45% 0.02 258)", marginBottom: 8 }}>Evolução</div>
+            <ol style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {item.evolucoes.map((e) => (
+                <EvolucaoLinha key={e.id} e={e} />
+              ))}
+            </ol>
+          </div>
+        </div>
+      )}
+    </li>
+  );
+}
+
+// Histórico é secundário: falha ao carregar não bloqueia o atendimento atual.
+function AtendimentosAnteriores({ token, pacienteId }) {
+  const [itens, setItens] = useState(null);
+  const [erro, setErro] = useState(false);
+
+  useEffect(() => {
+    let cancelado = false;
+    setItens(null);
+    setErro(false);
+    listarAtendimentosAnteriores(token, pacienteId)
+      .then((dados) => !cancelado && setItens(dados))
+      .catch(() => !cancelado && setErro(true));
+    return () => {
+      cancelado = true;
+    };
+  }, [token, pacienteId]);
+
+  return (
+    <section aria-labelledby="anteriores-titulo" style={card}>
+      <h3 id="anteriores-titulo" style={tituloSecao}>Atendimentos anteriores</h3>
+      {itens === null && !erro && <div style={{ fontSize: 13, color: "oklch(55% 0.015 258)" }}>Carregando...</div>}
+      {erro && <div role="alert" style={{ fontSize: 13, color: "#D62839" }}>Não foi possível carregar os atendimentos anteriores.</div>}
+      {itens?.length === 0 && <div style={{ fontSize: 13, color: "oklch(55% 0.015 258)" }}>Primeiro atendimento do paciente nesta unidade.</div>}
+      {itens?.length > 0 && (
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+          {itens.map((item) => (
+            <AtendimentoAnteriorItem key={item.prontuario_id} item={item} />
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
@@ -255,14 +370,7 @@ export default function AtendimentoScreen({ token, showToast, pacienteId, onSele
         <section aria-labelledby="prescricoes-titulo" style={{ ...card, flex: "1 1 280px", minWidth: 0 }}>
           <h3 id="prescricoes-titulo" style={tituloSecao}>Prescrições</h3>
           {prontuario.prescricoes.map((rx) => (
-            <div key={rx.id} style={{ padding: "10px 0", borderTop: "1px solid oklch(94% 0.008 258)" }}>
-              <div style={{ fontSize: 13.5, fontWeight: 700 }}>
-                {rx.medicamento} — {rx.dosagem}
-              </div>
-              <div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>
-                {rx.via} · {rx.frequencia || "—"} · {new Date(rx.data).toLocaleString("pt-BR")} · {rx.responsavel_matricula}
-              </div>
-            </div>
+            <PrescricaoLinha key={rx.id} rx={rx} />
           ))}
           {prontuario.prescricoes.length === 0 && <div style={{ fontSize: 13, color: "oklch(55% 0.015 258)" }}>Nenhuma prescrição registrada.</div>}
         </section>
@@ -272,17 +380,12 @@ export default function AtendimentoScreen({ token, showToast, pacienteId, onSele
         <h3 id="evolucao-titulo" style={tituloSecao}>Evolução</h3>
         <ol style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {prontuario.evolucoes.map((e) => (
-            <li key={e.id} style={{ paddingBottom: 18, borderLeft: "2px solid oklch(90% 0.012 258)", marginLeft: 4, paddingLeft: 18, position: "relative" }}>
-              <div style={{ position: "absolute", left: -6, top: 2, width: 10, height: 10, borderRadius: "50%", background: ACENTO }} />
-              <div style={{ fontSize: 12, color: MUTED }}>
-                {new Date(e.data).toLocaleString("pt-BR")} · {e.responsavel_matricula}
-              </div>
-              <div style={{ fontSize: 11.5, fontWeight: 700, color: "oklch(45% 0.02 258)", marginTop: 2 }}>{e.tipo}</div>
-              <div style={{ fontSize: 13, marginTop: 4, lineHeight: 1.5 }}>{e.descricao}</div>
-            </li>
+            <EvolucaoLinha key={e.id} e={e} />
           ))}
         </ol>
       </section>
+
+      <AtendimentosAnteriores token={token} pacienteId={pacienteId} />
 
       {modal === "prescrever" && (
         <PrescricaoModal
