@@ -4,8 +4,8 @@ from app.api.deps import ClinicoAtual, DbDep
 from app.models.evolucao import Evolucao
 from app.models.paciente import Paciente
 from app.models.prescricao import Prescricao
-from app.models.prontuario import Prontuario
-from app.schemas.prontuario import ProntuarioResponse, SinaisVitaisAtuais
+from app.models.prontuario import Prontuario, acoes_medicas, status_efetivo
+from app.schemas.prontuario import PacienteResumo, ProntuarioResponse, SinaisVitaisAtuais
 
 router = APIRouter(prefix="/api", tags=["prontuario"])
 
@@ -43,9 +43,19 @@ def consultar_prontuario(
         .all()
     )
 
+    status_atual = status_efetivo(prontuario)
     return ProntuarioResponse(
         paciente_id=paciente.id,
         paciente_nome=paciente.nome,
+        paciente=PacienteResumo(
+            data_nascimento=paciente.data_nascimento,
+            sexo=paciente.sexo,
+            cpf=paciente.cpf,
+            cns=paciente.cns,
+            telefone=paciente.telefone,
+        ),
+        queixa=prontuario.queixa,
+        status=status_atual,
         sinais_vitais=SinaisVitaisAtuais(
             classificacao_risco=prontuario.classificacao_risco,
             pas=prontuario.pas,
@@ -59,4 +69,5 @@ def consultar_prontuario(
         evolucoes=evolucoes,
         prescricoes=prescricoes,
         pode_prescrever=colaborador.perfil == "medico",
+        **acoes_medicas(colaborador.perfil, status_atual),
     )
