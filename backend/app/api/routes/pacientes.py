@@ -11,6 +11,8 @@ from app.models.paciente import Paciente
 from app.models.prontuario import Prontuario, status_efetivo
 from app.schemas.paciente import (
     CPF_PATTERN,
+    DadosCadastraisRetorno,
+    NovoAtendimentoIn,
     NovoAtendimentoOut,
     PacienteBusca,
     PacienteCreate,
@@ -29,6 +31,22 @@ def _tem_atendimento_ativo(db, paciente_id: int) -> bool:
         .first()
         is not None
     )
+
+
+def _aplicar_dados_cadastrais(paciente: Paciente, dados: DadosCadastraisRetorno | None) -> list[str]:
+    """Aplica só o que mudou e devolve os nomes dos campos alterados.
+    Campo ausente ou telefone em branco = não alterar (limpar telefone não é suportado)."""
+    if dados is None:
+        return []
+    atualizados = []
+    telefone = (dados.telefone or "").strip()
+    if telefone and telefone != paciente.telefone:
+        paciente.telefone = telefone
+        atualizados.append("telefone")
+    if dados.sexo and dados.sexo != paciente.sexo:
+        paciente.sexo = dados.sexo
+        atualizados.append("sexo")
+    return atualizados
 
 
 @router.get("/pacientes", response_model=list[PacienteBusca])
@@ -94,6 +112,7 @@ def abrir_novo_atendimento(
     paciente_id: int,
     db: DbDep,
     colaborador: Annotated[Colaborador, Depends(require_perfil("enfermeiro"))],
+    payload: NovoAtendimentoIn | None = None,
 ) -> NovoAtendimentoOut:
     paciente = (
         db.query(Paciente).filter(Paciente.id == paciente_id, Paciente.deleted_at.is_(None)).first()
@@ -115,11 +134,16 @@ def abrir_novo_atendimento(
         db.rollback()
         raise conflito
 
+    descricao = "Retorno do paciente, aguardando triagem."
+    atualizados = _aplicar_dados_cadastrais(paciente, payload.dados_cadastrais if payload else None)
+    if atualizados:
+        descricao += f" Dados atualizados: {', '.join(atualizados)}."
+
     db.add(
         Evolucao(
             prontuario_id=prontuario.id,
             tipo="Cadastro",
-            descricao="Retorno do paciente, aguardando triagem.",
+            descricao=descricao,
             responsavel_matricula=colaborador.matricula,
         )
     )

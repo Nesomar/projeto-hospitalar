@@ -31,6 +31,15 @@ class PacienteBusca(PacienteOut):
     atendimento_ativo: bool
 
 
+class DadosCadastraisRetorno(BaseModel):
+    telefone: str | None = None
+    sexo: str | None = Field(default=None, pattern=r"^[FMO]$")
+
+
+class NovoAtendimentoIn(BaseModel):
+    dados_cadastrais: DadosCadastraisRetorno | None = None
+
+
 class NovoAtendimentoOut(BaseModel):
     prontuario_id: int
     paciente_id: int
