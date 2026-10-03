@@ -81,8 +81,8 @@ flowchart LR
 ### UC004 - Cadastrar Paciente
 * **Ator**: Enfermeiro.
 * **Fluxo**: Preencher Nome, CPF, CNS, Data de Nascimento, Sexo, Telefone -> Cadastrar Paciente.
-* **Retorno de paciente**: se o CPF já estiver cadastrado, a tela exibe nome e data de nascimento do paciente. Sem atendimento ativo, oferece "Abrir novo atendimento"; com atendimento ativo, informa "Paciente já está em atendimento".
-* **Regra**: abrir novo atendimento cria um novo prontuário "Aguardando Triagem" e registra a evolução "Cadastro" ("Retorno do paciente, aguardando triagem."). Apenas o enfermeiro executa essa ação.
+* **Retorno de paciente**: se o CPF já estiver cadastrado, a tela exibe nome e data de nascimento do paciente. Sem atendimento ativo, exibe telefone e sexo para revisão (preenchidos com os valores atuais) e oferece "Abrir novo atendimento"; com atendimento ativo, informa "Paciente já está em atendimento".
+* **Regra**: abrir novo atendimento cria um novo prontuário "Aguardando Triagem" e registra a evolução "Cadastro" ("Retorno do paciente, aguardando triagem."). Apenas o enfermeiro executa essa ação. Se telefone ou sexo foram alterados, a atualização ocorre na mesma operação e a evolução "Cadastro" acrescenta "Dados atualizados: <campos>.". Nome, data de nascimento, CPF e CNS não são editáveis nesse fluxo.
 * Detalhamento CARE: ver `[CARE-RF002]` em `02-requisitos.md`.
 
 ### UC005 - Autenticar-se
