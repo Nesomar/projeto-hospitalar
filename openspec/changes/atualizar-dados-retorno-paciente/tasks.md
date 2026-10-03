@@ -24,6 +24,6 @@
 
 ## 3. Validação e docs
 
-- [ ] 3.1 Fluxo manual: paciente com alta, recadastrar o CPF, alterar o telefone, abrir novo atendimento e
+- [x] 3.1 Fluxo manual: paciente com alta, recadastrar o CPF, alterar o telefone, abrir novo atendimento e
   conferir telefone atualizado e evolução "Cadastro" com "Dados atualizados: telefone.".
-- [ ] 3.2 Atualizar UC004 em `docs/03-casos-uso.md` (revisão de telefone e sexo no retorno).
+- [x] 3.2 Atualizar UC004 em `docs/03-casos-uso.md` (revisão de telefone e sexo no retorno).
