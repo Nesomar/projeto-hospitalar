@@ -63,8 +63,12 @@ export function buscarPacientePorCpf(token, cpf) {
   return request("/api/pacientes", { token, params: { cpf } });
 }
 
-export function abrirNovoAtendimento(token, pacienteId) {
-  return request(`/api/pacientes/${pacienteId}/atendimentos`, { method: "POST", token });
+export function abrirNovoAtendimento(token, pacienteId, dadosCadastrais) {
+  return request(`/api/pacientes/${pacienteId}/atendimentos`, {
+    method: "POST",
+    token,
+    body: dadosCadastrais ? { dados_cadastrais: dadosCadastrais } : undefined,
+  });
 }
 
 export function listarAtendimentosAnteriores(token, pacienteId) {
