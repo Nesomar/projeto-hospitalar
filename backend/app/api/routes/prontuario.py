@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
+from sqlalchemy import case
 
 from app.api.deps import ClinicoAtual, DbDep
 from app.models.evolucao import Evolucao
@@ -6,6 +7,9 @@ from app.models.paciente import Paciente
 from app.models.prescricao import Prescricao
 from app.models.prontuario import Prontuario, acoes_medicas, status_efetivo
 from app.schemas.prontuario import PacienteResumo, ProntuarioResponse, SinaisVitaisAtuais
+
+# Ativo (sem alta) antes; sem ativo, cai no mais recente.
+ativo_primeiro = case((Prontuario.status_atendimento == "alta", 1), else_=0)
 
 router = APIRouter(prefix="/api", tags=["prontuario"])
 
@@ -25,6 +29,7 @@ def consultar_prontuario(
     prontuario = (
         db.query(Prontuario)
         .filter(Prontuario.paciente_id == paciente_id, Prontuario.deleted_at.is_(None))
+        .order_by(ativo_primeiro, Prontuario.data_criacao.desc(), Prontuario.id.desc())
         .first()
     )
     if prontuario is None:
