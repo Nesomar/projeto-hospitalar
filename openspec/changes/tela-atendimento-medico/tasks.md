@@ -63,12 +63,12 @@
 
 ## 6. Validação
 
-- [ ] 6.1 Rodar `docker compose up`, aplicar a migração e executar a suíte do backend (verde).
-- [ ] 6.2 Fluxo manual como médico:
+- [x] 6.1 Rodar `docker compose up`, aplicar a migração e executar a suíte do backend (verde).
+- [x] 6.2 Fluxo manual como médico:
   - Painel → Iniciar abre o posto;
   - confirmar mantém na tela com status "Em Atendimento";
   - prescrever mostra a prescrição e a evolução;
   - exames → retomar → alta volta ao Painel.
-- [ ] 6.3 Regressão manual: ações do Painel (alta, exames, retomar), tela de Prescrição e Prontuário do
+- [x] 6.3 Regressão manual: ações do Painel (alta, exames, retomar), tela de Prescrição e Prontuário do
   enfermeiro funcionam como antes.
-- [ ] 6.4 Atualizar `docs/03-casos-uso.md` (UC007) para descrever o posto de atendimento.
+- [x] 6.4 Atualizar `docs/03-casos-uso.md` (UC007) para descrever o posto de atendimento.

@@ -94,8 +94,9 @@ flowchart LR
 
 ### UC007 - Iniciar Atendimento
 * **Ator**: Médico.
-* **Fluxo**: Selecionar paciente com status "Aguardando Atendimento" -> Iniciar Atendimento.
+* **Fluxo**: Selecionar paciente com status "Aguardando Atendimento" (pelo Painel ou pela aba Atendimento) -> abrir o posto de atendimento -> Iniciar Atendimento.
 * **Regra**: só disponível para paciente já triado (`classificacao_risco` definida) e ainda sem atendimento iniciado; registra evolução "Início de Atendimento".
+* **Posto de atendimento**: tela única do médico com dados do paciente (idade, sexo, CPF, CNS, telefone), triagem (queixa principal e sinais vitais), prescrições e evolução do atendimento atual. Exibe as ações disponíveis para o status (Iniciar, Prescrever, Solicitar Exames — UC009, Dar Alta — UC008, Retomar — UC010). O médico permanece no posto após cada ação; apenas a alta retorna ao Painel.
 
 ### UC008 - Dar Alta
 * **Ator**: Médico.
