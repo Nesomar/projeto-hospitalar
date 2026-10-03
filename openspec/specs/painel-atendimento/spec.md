@@ -4,9 +4,7 @@
 
 Painel de atendimento (UC006 / RF006): fila de pacientes priorizada pela classificação de risco,
 com filtro por cor e a ação de triagem restrita a enfermeiros e pacientes aguardando triagem.
-
 ## Requirements
-
 ### Requirement: Listagem priorizada por classificação de risco
 O sistema SHALL ordenar a lista de pacientes no painel da classificação mais grave (Vermelho) para a menos grave (Azul), com pacientes não classificados ao final, e permitir filtro por cor.
 
@@ -33,7 +31,7 @@ O sistema SHALL exibir a ação "Fazer Triagem" apenas quando o paciente estiver
 O sistema SHALL exibir no painel, para cada paciente, quais ações de atendimento ("Iniciar Atendimento",
 "Dar Alta", "Solicitar Exames Complementares", "Retomar Atendimento") estão disponíveis, restritas ao
 perfil "medico" e ao status atual do paciente. Ao acionar "Iniciar Atendimento", o sistema SHALL navegar
-para uma tela dedicada de confirmação antes de efetivar a transição. Ao acionar "Dar Alta" ou "Retomar
+para o posto de atendimento do paciente, onde a transição é confirmada. Ao acionar "Dar Alta" ou "Retomar
 Atendimento", o sistema SHALL exibir um modal de confirmação (sem campos) antes de efetivar a transição.
 Ao acionar "Solicitar Exames Complementares", o sistema SHALL exibir um modal com campo opcional de
 observações antes de efetivar a transição. Se a transição for rejeitada pelo backend por estar fora de
@@ -46,7 +44,7 @@ status atualizado.
 
 #### Scenario: Iniciar atendimento abre tela dedicada
 - **WHEN** o usuário aciona "Iniciar Atendimento" na linha do paciente
-- **THEN** o sistema navega para uma tela dedicada de confirmação, sem efetivar a transição antes da
+- **THEN** o sistema navega para o posto de atendimento do paciente, sem efetivar a transição antes da
   confirmação do usuário nessa tela
 
 #### Scenario: Ações de alta e exames visíveis
@@ -89,3 +87,4 @@ O sistema SHALL excluir da listagem do painel qualquer paciente cujo status seja
 #### Scenario: Paciente com alta excluído do painel
 - **WHEN** o painel é carregado e existe paciente com status "Alta"
 - **THEN** o sistema não inclui esse paciente na lista retornada
+

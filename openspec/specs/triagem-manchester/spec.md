@@ -4,9 +4,7 @@
 
 Classificação de risco do paciente pelo Protocolo de Manchester (UC001 / RF003), calculando a
 cor de triagem a partir dos sinais vitais e persistindo a confirmação no prontuário.
-
 ## Requirements
-
 ### Requirement: Cálculo de classificação de risco pelo Protocolo de Manchester
 O sistema SHALL calcular a classificação de risco do paciente a partir dos sinais vitais informados (PA, FC, FR, Temperatura, SpO2, dor), avaliando os critérios em cascata da cor mais grave para a mais leve; o primeiro critério satisfeito define a cor.
 
@@ -38,8 +36,17 @@ O sistema SHALL exigir PA, FC, Temperatura e SpO2 preenchidos antes de permitir 
 - **THEN** o sistema bloqueia o cálculo e exibe mensagem solicitando o preenchimento dos sinais vitais
 
 ### Requirement: Confirmação da triagem
-O sistema SHALL persistir a classificação de risco confirmada pelo enfermeiro e atualizar o status do paciente.
+O sistema SHALL persistir a classificação de risco confirmada pelo enfermeiro, os sinais vitais e a queixa principal informada (quando houver) no prontuário, e atualizar o status do paciente.
 
 #### Scenario: Confirmação bem-sucedida
 - **WHEN** o enfermeiro confirma uma classificação de risco calculada
 - **THEN** o sistema persiste `classificacao_risco` no prontuário, muda o status do paciente para "Aguardando Atendimento" e cria uma evolução do tipo "Triagem"
+
+#### Scenario: Queixa persistida no prontuário
+- **WHEN** o enfermeiro confirma a triagem informando a queixa principal
+- **THEN** o sistema grava a queixa no campo `queixa` do prontuário, além de citá-la na descrição da evolução "Triagem"
+
+#### Scenario: Triagem sem queixa
+- **WHEN** o enfermeiro confirma a triagem sem informar queixa
+- **THEN** o sistema mantém `queixa` nula no prontuário e registra "sem queixa registrada" na evolução
+
