@@ -43,12 +43,12 @@
 
 ## 4. Frontend — cadastro com retorno
 
-- [ ] 4.1 Adicionar em `api.js` as funções `buscarPacientePorCpf`, `abrirNovoAtendimento` e
+- [x] 4.1 Adicionar em `api.js` as funções `buscarPacientePorCpf`, `abrirNovoAtendimento` e
   `listarAtendimentosAnteriores`.
-- [ ] 4.2 Em `CadastroScreen.jsx`, quando o cadastro retornar 409, buscar por CPF e exibir:
+- [x] 4.2 Em `CadastroScreen.jsx`, quando o cadastro retornar 409, buscar por CPF e exibir:
   - cartão do paciente com "Abrir novo atendimento", se não houver atendimento ativo;
   - "Paciente já está em atendimento", se houver.
-- [ ] 4.3 Ao abrir o novo atendimento com sucesso: toast "Novo atendimento aberto." e voltar ao Painel.
+- [x] 4.3 Ao abrir o novo atendimento com sucesso: toast "Novo atendimento aberto." e voltar ao Painel.
 
 ## 5. Frontend — histórico no posto
 

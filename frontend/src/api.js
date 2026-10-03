@@ -59,6 +59,18 @@ export function cadastrarPaciente(token, dados) {
   return request("/api/pacientes", { method: "POST", token, body: dados });
 }
 
+export function buscarPacientePorCpf(token, cpf) {
+  return request("/api/pacientes", { token, params: { cpf } });
+}
+
+export function abrirNovoAtendimento(token, pacienteId) {
+  return request(`/api/pacientes/${pacienteId}/atendimentos`, { method: "POST", token });
+}
+
+export function listarAtendimentosAnteriores(token, pacienteId) {
+  return request(`/api/pacientes/${pacienteId}/atendimentos`, { token });
+}
+
 export function calcularTriagem(token, sinaisVitais) {
   return request("/api/triagem/calcular", { method: "POST", token, body: sinaisVitais });
 }
