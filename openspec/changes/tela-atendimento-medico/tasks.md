@@ -39,26 +39,26 @@
 
 ## 5. Frontend — posto de atendimento
 
-- [ ] 5.1 Renomear `IniciarAtendimentoScreen.jsx` para `AtendimentoScreen.jsx` e atualizar o import e as
+- [x] 5.1 Renomear `IniciarAtendimentoScreen.jsx` para `AtendimentoScreen.jsx` e atualizar o import e as
   props em `App.jsx`: `onAlta={voltarAoPainel}` e `onVoltar` (desseleciona o paciente).
-- [ ] 5.2 Na lista de seleção, filtrar itens do painel com qualquer flag `pode_*` médica verdadeira e
+- [x] 5.2 Na lista de seleção, filtrar itens do painel com qualquer flag `pode_*` médica verdadeira e
   exibir cor e status. Mensagem para lista vazia: "Nenhum paciente aguardando atendimento médico.".
-- [ ] 5.3 Criar o cabeçalho com:
+- [x] 5.3 Criar o cabeçalho com:
   - nome, idade calculada de `data_nascimento`, sexo, CPF, CNS e telefone;
   - badge de cor e status;
   - "—" para campos ausentes.
-- [ ] 5.4 Criar o bloco de triagem: queixa + grade de sinais vitais (PA sistólica/diastólica, FC, FR, Temp,
+- [x] 5.4 Criar o bloco de triagem: queixa + grade de sinais vitais (PA sistólica/diastólica, FC, FR, Temp,
   SpO2, dor).
-- [ ] 5.5 Criar o bloco de prescrições, com "Nenhuma prescrição registrada." para lista vazia, e a timeline
+- [x] 5.5 Criar o bloco de prescrições, com "Nenhuma prescrição registrada." para lista vazia, e a timeline
   de evoluções com data/hora e matrícula, em ordem decrescente.
-- [ ] 5.6 Criar a barra de ações dirigida pelas flags `pode_*`:
+- [x] 5.6 Criar a barra de ações dirigida pelas flags `pode_*`:
   - Iniciar, Exames, Alta e Retomar via `ConfirmModal` + `acoesAtendimento.js`;
   - Prescrever via modal com `PrescricaoForm`.
-- [ ] 5.7 Pós-sucesso das ações:
+- [x] 5.7 Pós-sucesso das ações:
   - alta: toast e `onAlta()`;
   - demais ações: toast e recarregar o prontuário.
   - Em caso de erro: toast com a mensagem e recarregar.
-- [ ] 5.8 Seguir o padrão visual existente (oklch, `ACENTO`, `COLORS`), usando `frontend-design` +
+- [x] 5.8 Seguir o padrão visual existente (oklch, `ACENTO`, `COLORS`), usando `frontend-design` +
   `ui-ux-pro-max`. Layout em duas colunas (triagem | ações) que empilha em telas estreitas.
 
 ## 6. Validação
