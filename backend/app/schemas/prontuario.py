@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel
 
@@ -39,10 +39,25 @@ class PrescricaoItem(BaseModel):
         from_attributes = True
 
 
+class PacienteResumo(BaseModel):
+    data_nascimento: date
+    sexo: str | None
+    cpf: str
+    cns: str
+    telefone: str | None
+
+
 class ProntuarioResponse(BaseModel):
     paciente_id: int
     paciente_nome: str
+    paciente: PacienteResumo
+    queixa: str | None
+    status: str
     sinais_vitais: SinaisVitaisAtuais
     evolucoes: list[EvolucaoItem]
     prescricoes: list[PrescricaoItem]
     pode_prescrever: bool
+    pode_iniciar_atendimento: bool
+    pode_dar_alta: bool
+    pode_solicitar_exames: bool
+    pode_retomar_atendimento: bool

@@ -94,3 +94,55 @@ def test_pode_prescrever_false_para_enfermeiro(client, auth_headers, db_session)
 
     resp = client.get(f"/api/pacientes/{paciente_id}/prontuario", headers=headers_enfermeiro)
     assert resp.json()["pode_prescrever"] is False
+
+
+def _triar_e_iniciar(client, auth_headers, paciente_id, queixa=None):
+    vitais = {"pas": 100, "fc": 80, "temp": 36.5, "spo2": 98, "dor": 0}
+    if queixa:
+        vitais["queixa"] = queixa
+    client.post(f"/api/pacientes/{paciente_id}/triagem/confirmar", json=vitais, headers=auth_headers)
+    client.post(f"/api/pacientes/{paciente_id}/atendimento/iniciar", headers=auth_headers)
+
+
+def test_medico_em_atendimento_recebe_dados_paciente_e_flags(client, auth_headers):
+    paciente_id = _cadastrar_paciente(client, auth_headers)
+    _triar_e_iniciar(client, auth_headers, paciente_id, queixa="Dor no peito")
+
+    dados = client.get(f"/api/pacientes/{paciente_id}/prontuario", headers=auth_headers).json()
+
+    assert dados["paciente"] == {
+        "data_nascimento": "1958-05-12",
+        "sexo": None,
+        "cpf": "12345678901",
+        "cns": "123456789012345",
+        "telefone": None,
+    }
+    assert dados["queixa"] == "Dor no peito"
+    assert dados["status"] == "Em Atendimento"
+    assert dados["pode_dar_alta"] is True
+    assert dados["pode_solicitar_exames"] is True
+    assert dados["pode_iniciar_atendimento"] is False
+    assert dados["pode_retomar_atendimento"] is False
+
+
+def test_enfermeiro_recebe_todas_flags_medicas_falsas(client, auth_headers, db_session):
+    paciente_id = _cadastrar_paciente(client, auth_headers)
+    _triar_e_iniciar(client, auth_headers, paciente_id)
+
+    dados = client.get(
+        f"/api/pacientes/{paciente_id}/prontuario", headers=_headers_enfermeiro(db_session)
+    ).json()
+
+    assert dados["status"] == "Em Atendimento"
+    assert dados["paciente"]["cpf"] == "12345678901"
+    for flag in ("pode_iniciar_atendimento", "pode_dar_alta", "pode_solicitar_exames", "pode_retomar_atendimento"):
+        assert dados[flag] is False
+
+
+def test_prontuario_sem_queixa_retorna_nulo(client, auth_headers):
+    paciente_id = _cadastrar_paciente(client, auth_headers)
+
+    dados = client.get(f"/api/pacientes/{paciente_id}/prontuario", headers=auth_headers).json()
+
+    assert dados["queixa"] is None
+    assert dados["status"] == "Aguardando Triagem"

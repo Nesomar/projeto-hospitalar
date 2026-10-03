@@ -18,12 +18,12 @@
 
 ## 3. Backend — prontuário enriquecido
 
-- [ ] 3.1 Em `app/schemas/prontuario.py`:
+- [x] 3.1 Em `app/schemas/prontuario.py`:
   - adicionar `PacienteResumo` (`data_nascimento`, `sexo`, `cpf`, `cns`, `telefone`);
   - estender `ProntuarioResponse` com `paciente: PacienteResumo`, `queixa: str | None`, `status: str` e as
     4 flags `pode_*`.
-- [ ] 3.2 Preencher os campos novos em `consultar_prontuario`, usando `status_efetivo` e `acoes_medicas`.
-- [ ] 3.3 Testes em `test_prontuario.py`:
+- [x] 3.2 Preencher os campos novos em `consultar_prontuario`, usando `status_efetivo` e `acoes_medicas`.
+- [x] 3.3 Testes em `test_prontuario.py`:
   - médico com paciente "Em Atendimento" recebe as flags corretas e os dados do paciente;
   - enfermeiro recebe todas as flags falsas;
   - prontuário sem queixa retorna `queixa` nula.
