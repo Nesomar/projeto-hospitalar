@@ -39,6 +39,7 @@ def confirmar_triagem(
     prontuario.temp = payload.temp
     prontuario.spo2 = payload.spo2
     prontuario.dor = payload.dor
+    prontuario.queixa = payload.queixa
 
     queixa = payload.queixa or "sem queixa registrada"
     evolucao = Evolucao(
