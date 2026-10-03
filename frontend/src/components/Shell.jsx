@@ -23,7 +23,7 @@ const TITULOS = {
   },
   cadastro: { _: ["Cadastro de Paciente", "Registro de novo paciente no sistema."] },
   triagem: { _: ["Triagem", "Classificação de risco pelo Protocolo de Manchester."] },
-  atendimento: { _: ["Atendimento", "Início de atendimento médico após triagem."] },
+  atendimento: { _: ["Atendimento", "Dados do paciente, triagem e condutas do atendimento médico."] },
   prontuario: { _: ["Prontuário", "Sinais vitais, evolução e prescrições do paciente."] },
   prescricao: { _: ["Prescrição", "Registro de medicamentos prescritos."] },
   gestao: { _: ["Cadastro de Colaborador", "Registro de novo enfermeiro ou médico no sistema."] },
