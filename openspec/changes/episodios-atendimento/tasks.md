@@ -19,13 +19,13 @@
 
 ## 2. Backend — retorno de paciente
 
-- [ ] 2.1 Criar `GET /api/pacientes?cpf=` (`ClinicoAtual`), retornando `list[PacienteBusca]` (`PacienteOut`
+- [x] 2.1 Criar `GET /api/pacientes?cpf=` (`ClinicoAtual`), retornando `list[PacienteBusca]` (`PacienteOut`
   + `atendimento_ativo`).
-- [ ] 2.2 Criar `POST /api/pacientes/{id}/atendimentos` (perfil `enfermeiro`):
+- [x] 2.2 Criar `POST /api/pacientes/{id}/atendimentos` (perfil `enfermeiro`):
   - cria o prontuário e a evolução "Cadastro" ("Retorno do paciente, aguardando triagem.");
   - `IntegrityError` ou existência de atendimento ativo retorna 409 "Paciente já possui atendimento ativo";
   - paciente inexistente retorna 404.
-- [ ] 2.3 Testes (`test_episodios.py`):
+- [x] 2.3 Testes (`test_episodios.py`):
   - retorno após alta cria novo prontuário e o paciente reaparece no painel;
   - retorno com atendimento ativo retorna 409;
   - médico recebe 403;
