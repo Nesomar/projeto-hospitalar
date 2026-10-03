@@ -15,7 +15,7 @@ status atualizado.
 - **WHEN** o paciente possui status "Aguardando Atendimento" e o usuário tem perfil "medico"
 - **THEN** o sistema exibe a ação "Iniciar Atendimento" na linha do paciente
 
-#### Scenario: Iniciar atendimento abre o posto de atendimento
+#### Scenario: Iniciar atendimento abre tela dedicada
 - **WHEN** o usuário aciona "Iniciar Atendimento" na linha do paciente
 - **THEN** o sistema navega para o posto de atendimento do paciente, sem efetivar a transição antes da
   confirmação do usuário nessa tela
