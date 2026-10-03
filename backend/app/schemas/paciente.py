@@ -25,3 +25,13 @@ class PacienteOut(BaseModel):
     data_nascimento: date
     sexo: str | None
     telefone: str | None
+
+
+class PacienteBusca(PacienteOut):
+    atendimento_ativo: bool
+
+
+class NovoAtendimentoOut(BaseModel):
+    prontuario_id: int
+    paciente_id: int
+    status: str
