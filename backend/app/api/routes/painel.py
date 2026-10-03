@@ -5,7 +5,12 @@ from sqlalchemy import or_
 
 from app.api.deps import ClinicoAtual, DbDep
 from app.models.paciente import Paciente
-from app.models.prontuario import CLASSIFICACOES_RISCO, Prontuario, status_efetivo
+from app.models.prontuario import (
+    CLASSIFICACOES_RISCO,
+    Prontuario,
+    acoes_medicas,
+    status_efetivo,
+)
 from app.schemas.painel import PainelItem
 
 router = APIRouter(prefix="/api", tags=["painel"])
@@ -30,7 +35,6 @@ def listar_painel(
         .all()
     )
 
-    e_medico = colaborador.perfil == "medico"
     itens = []
     for paciente, prontuario in registros:
         if cor is not None and prontuario.classificacao_risco != cor:
@@ -44,11 +48,7 @@ def listar_painel(
                 status=item_status,
                 pode_fazer_triagem=colaborador.perfil == "enfermeiro"
                 and item_status == "Aguardando Triagem",
-                pode_iniciar_atendimento=e_medico and item_status == "Aguardando Atendimento",
-                pode_dar_alta=e_medico and item_status == "Em Atendimento",
-                pode_solicitar_exames=e_medico and item_status == "Em Atendimento",
-                pode_retomar_atendimento=e_medico
-                and item_status == "Aguardando Exames Complementares",
+                **acoes_medicas(colaborador.perfil, item_status),
             )
         )
 

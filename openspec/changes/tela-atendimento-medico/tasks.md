@@ -10,11 +10,11 @@
 
 ## 2. Backend — regra de ações médicas compartilhada
 
-- [ ] 2.1 Criar `acoes_medicas(perfil: str, status: str) -> dict[str, bool]` em `app/models/prontuario.py`,
+- [x] 2.1 Criar `acoes_medicas(perfil: str, status: str) -> dict[str, bool]` em `app/models/prontuario.py`,
   retornando `pode_iniciar_atendimento`, `pode_dar_alta`, `pode_solicitar_exames` e
   `pode_retomar_atendimento`.
-- [ ] 2.2 Fazer `listar_painel` (`app/api/routes/painel.py`) usar o helper.
-- [ ] 2.3 Rodar `test_painel.py` e `test_atendimento.py` sem alterações: ambos devem continuar verdes.
+- [x] 2.2 Fazer `listar_painel` (`app/api/routes/painel.py`) usar o helper.
+- [x] 2.3 Rodar `test_painel.py` e `test_atendimento.py` sem alterações: ambos devem continuar verdes.
 
 ## 3. Backend — prontuário enriquecido
 
