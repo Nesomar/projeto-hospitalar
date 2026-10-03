@@ -44,3 +44,13 @@ def status_efetivo(prontuario: "Prontuario") -> str:
     if prontuario.classificacao_risco:
         return "Aguardando Atendimento"
     return "Aguardando Triagem"
+
+
+def acoes_medicas(perfil: str, status: str) -> dict[str, bool]:
+    e_medico = perfil == "medico"
+    return {
+        "pode_iniciar_atendimento": e_medico and status == "Aguardando Atendimento",
+        "pode_dar_alta": e_medico and status == "Em Atendimento",
+        "pode_solicitar_exames": e_medico and status == "Em Atendimento",
+        "pode_retomar_atendimento": e_medico and status == "Aguardando Exames Complementares",
+    }
