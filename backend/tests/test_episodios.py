@@ -150,3 +150,110 @@ def test_historico_primeira_visita_e_vazio(client, auth_headers):
 
 def test_historico_paciente_inexistente_retorna_404(client, auth_headers):
     assert client.get("/api/pacientes/999/atendimentos", headers=auth_headers).status_code == 404
+
+
+# --- atualização de dados cadastrais no retorno ---
+
+
+def _paciente_com_alta(client, auth_headers, telefone="(81) 99999-0000", sexo="F"):
+    resp = client.post(
+        "/api/pacientes",
+        json={
+            "nome": "Maria Aparecida Souza",
+            "cpf": CPF,
+            "cns": "123456789012345",
+            "data_nascimento": "1958-05-12",
+            "sexo": sexo,
+            "telefone": telefone,
+        },
+        headers=auth_headers,
+    )
+    pid = resp.json()["id"]
+    _dar_alta(client, auth_headers, pid)
+    return pid
+
+
+def _retorno(client, enf, pid, dados=None):
+    body = None if dados is None else {"dados_cadastrais": dados}
+    return client.post(f"/api/pacientes/{pid}/atendimentos", json=body, headers=enf)
+
+
+def _descricao_retorno(db_session):
+    return db_session.query(Evolucao).filter(Evolucao.descricao.like("Retorno do paciente%")).one().descricao
+
+
+def test_retorno_atualiza_telefone_e_registra_na_evolucao(client, auth_headers, db_session):
+    enf = _enfermeiro(db_session)
+    pid = _paciente_com_alta(client, auth_headers)
+
+    resp = _retorno(client, enf, pid, {"telefone": "(81) 98888-1111", "sexo": "F"})
+    assert resp.status_code == 201
+
+    paciente = client.get(f"/api/pacientes?cpf={CPF}", headers=auth_headers).json()[0]
+    assert paciente["telefone"] == "(81) 98888-1111"
+    assert paciente["sexo"] == "F"
+    assert _descricao_retorno(db_session) == "Retorno do paciente, aguardando triagem. Dados atualizados: telefone."
+
+
+def test_retorno_atualiza_telefone_e_sexo(client, auth_headers, db_session):
+    enf = _enfermeiro(db_session)
+    pid = _paciente_com_alta(client, auth_headers)
+
+    _retorno(client, enf, pid, {"telefone": "(81) 98888-1111", "sexo": "O"})
+
+    paciente = client.get(f"/api/pacientes?cpf={CPF}", headers=auth_headers).json()[0]
+    assert (paciente["telefone"], paciente["sexo"]) == ("(81) 98888-1111", "O")
+    assert _descricao_retorno(db_session).endswith("Dados atualizados: telefone, sexo.")
+
+
+def test_retorno_sem_dados_ou_valores_iguais_nao_altera(client, auth_headers, db_session):
+    enf = _enfermeiro(db_session)
+    pid = _paciente_com_alta(client, auth_headers)
+
+    assert _retorno(client, enf, pid, {"telefone": "(81) 99999-0000", "sexo": "F"}).status_code == 201
+
+    paciente = client.get(f"/api/pacientes?cpf={CPF}", headers=auth_headers).json()[0]
+    assert paciente["telefone"] == "(81) 99999-0000"
+    assert _descricao_retorno(db_session) == "Retorno do paciente, aguardando triagem."
+
+
+def test_retorno_telefone_em_branco_nao_apaga_telefone(client, auth_headers, db_session):
+    enf = _enfermeiro(db_session)
+    pid = _paciente_com_alta(client, auth_headers)
+
+    _retorno(client, enf, pid, {"telefone": "  "})
+
+    paciente = client.get(f"/api/pacientes?cpf={CPF}", headers=auth_headers).json()[0]
+    assert paciente["telefone"] == "(81) 99999-0000"
+
+
+def test_retorno_sexo_invalido_retorna_422_sem_efeitos(client, auth_headers, db_session):
+    enf = _enfermeiro(db_session)
+    pid = _paciente_com_alta(client, auth_headers)
+
+    resp = _retorno(client, enf, pid, {"telefone": "(81) 98888-1111", "sexo": "X"})
+    assert resp.status_code == 422
+
+    assert db_session.query(Prontuario).filter_by(paciente_id=pid).count() == 1
+    paciente = client.get(f"/api/pacientes?cpf={CPF}", headers=auth_headers).json()[0]
+    assert paciente["telefone"] == "(81) 99999-0000"
+
+
+def test_retorno_com_atendimento_ativo_nao_altera_paciente(client, auth_headers, db_session):
+    enf = _enfermeiro(db_session)
+    pid = _cadastrar(client, auth_headers)
+
+    resp = _retorno(client, enf, pid, {"telefone": "(81) 98888-1111"})
+    assert resp.status_code == 409
+
+    paciente = client.get(f"/api/pacientes?cpf={CPF}", headers=auth_headers).json()[0]
+    assert paciente["telefone"] is None
+
+
+def test_medico_nao_atualiza_dados_no_retorno(client, auth_headers):
+    pid = _paciente_com_alta(client, auth_headers)
+
+    assert _retorno(client, auth_headers, pid, {"telefone": "(81) 98888-1111"}).status_code == 403
+
+    paciente = client.get(f"/api/pacientes?cpf={CPF}", headers=auth_headers).json()[0]
+    assert paciente["telefone"] == "(81) 99999-0000"
