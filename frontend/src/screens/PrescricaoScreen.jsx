@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
 import { COLORS } from "../colors.js";
-import { consultarProntuario, listarPainel, prescrever } from "../api.js";
-
-function defaultForm() {
-  return { medicamento: "", dosagem: "", via: "Oral", frequencia: "", observacoes: "" };
-}
+import { consultarProntuario, listarPainel } from "../api.js";
+import PrescricaoForm from "../components/PrescricaoForm.jsx";
 
 export default function PrescricaoScreen({ token, matricula, showToast, pacienteId, onSelecionarPaciente, onPrescrito }) {
   const [pacientes, setPacientes] = useState([]);
   const [carregandoLista, setCarregandoLista] = useState(true);
   const [prontuario, setProntuario] = useState(null);
-  const [form, setForm] = useState(defaultForm());
-  const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
     if (pacienteId) return;
@@ -32,39 +27,11 @@ export default function PrescricaoScreen({ token, matricula, showToast, paciente
 
   useEffect(() => {
     if (!pacienteId) return;
-    setForm(defaultForm());
     consultarProntuario(token, pacienteId)
       .then(setProntuario)
       .catch((err) => showToast(err.message || "Erro ao carregar prontuário."));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pacienteId, token]);
-
-  function update(campo, valor) {
-    setForm((f) => ({ ...f, [campo]: valor }));
-  }
-
-  async function onSubmit() {
-    if (!form.medicamento || !form.dosagem) {
-      showToast("Informe medicamento e dosagem.");
-      return;
-    }
-    setEnviando(true);
-    try {
-      await prescrever(token, pacienteId, {
-        medicamento: form.medicamento,
-        dosagem: form.dosagem,
-        via: form.via,
-        frequencia: form.frequencia || undefined,
-        observacoes: form.observacoes || undefined,
-      });
-      showToast("Prescrição registrada.");
-      onPrescrito(pacienteId);
-    } catch (err) {
-      showToast(err.message || "Erro ao registrar prescrição.");
-    } finally {
-      setEnviando(false);
-    }
-  }
 
   if (!pacienteId) {
     return (
@@ -118,68 +85,7 @@ export default function PrescricaoScreen({ token, matricula, showToast, paciente
           <div style={{ fontSize: 16, fontWeight: 800 }}>{prontuario?.paciente_nome}</div>
           <div style={{ fontSize: 12, color: "oklch(50% 0.018 258)" }}>Prescrito por matrícula {matricula}</div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700 }}>Medicamento</label>
-          <input
-            type="text"
-            value={form.medicamento}
-            onChange={(e) => update("medicamento", e.target.value)}
-            placeholder="ex: Dipirona"
-            style={{ width: "100%", border: "1px solid oklch(88% 0.012 258)", borderRadius: 12, padding: "11px 14px", fontSize: 14, boxSizing: "border-box" }}
-          />
-        </div>
-        <div style={{ display: "flex", gap: 14 }}>
-          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 6 }}>
-            <label style={{ fontSize: 12, fontWeight: 700 }}>Dosagem</label>
-            <input
-              type="text"
-              value={form.dosagem}
-              onChange={(e) => update("dosagem", e.target.value)}
-              placeholder="500mg"
-              style={{ width: "100%", border: "1px solid oklch(88% 0.012 258)", borderRadius: 12, padding: "11px 14px", fontSize: 14, boxSizing: "border-box" }}
-            />
-          </div>
-          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 6 }}>
-            <label style={{ fontSize: 12, fontWeight: 700 }}>Via</label>
-            <select
-              value={form.via}
-              onChange={(e) => update("via", e.target.value)}
-              style={{ width: "100%", border: "1px solid oklch(88% 0.012 258)", borderRadius: 12, padding: "11px 14px", fontSize: 14, background: "#fff", boxSizing: "border-box" }}
-            >
-              <option value="Oral">Oral</option>
-              <option value="IV">Endovenosa</option>
-              <option value="IM">Intramuscular</option>
-              <option value="SC">Subcutânea</option>
-              <option value="Tópica">Tópica</option>
-            </select>
-          </div>
-          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 6 }}>
-            <label style={{ fontSize: 12, fontWeight: 700 }}>Frequência</label>
-            <input
-              type="text"
-              value={form.frequencia}
-              onChange={(e) => update("frequencia", e.target.value)}
-              placeholder="8/8h"
-              style={{ width: "100%", border: "1px solid oklch(88% 0.012 258)", borderRadius: 12, padding: "11px 14px", fontSize: 14, boxSizing: "border-box" }}
-            />
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700 }}>Observações</label>
-          <textarea
-            value={form.observacoes}
-            onChange={(e) => update("observacoes", e.target.value)}
-            placeholder="Observações adicionais..."
-            style={{ border: "1px solid oklch(88% 0.012 258)", borderRadius: 12, padding: "11px 14px", fontSize: 13, minHeight: 70, resize: "vertical", boxSizing: "border-box" }}
-          />
-        </div>
-        <button
-          onClick={onSubmit}
-          disabled={enviando}
-          style={{ border: "none", background: "#2F6FED", color: "#fff", padding: 13, borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: "pointer" }}
-        >
-          {enviando ? "Salvando..." : "Salvar Prescrição"}
-        </button>
+        <PrescricaoForm key={pacienteId} token={token} pacienteId={pacienteId} showToast={showToast} onPrescrito={onPrescrito} />
       </div>
       <div style={{ flex: "1 1 260px", minWidth: 260, maxWidth: 340, display: "flex", flexDirection: "column", gap: 10 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: "oklch(45% 0.018 258)" }}>Prescrições anteriores</div>
