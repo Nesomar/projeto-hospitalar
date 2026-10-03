@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, Integer
+from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, Integer, Text
 from sqlalchemy.sql import func
 
 from app.core.database import Base
@@ -26,6 +26,7 @@ class Prontuario(Base):
     temp = Column(Float, nullable=True)
     spo2 = Column(Integer, nullable=True)
     dor = Column(Integer, nullable=True)
+    queixa = Column(Text, nullable=True)
 
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 

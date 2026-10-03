@@ -84,3 +84,29 @@ def test_confirmar_ja_triado_retorna_409(client, auth_headers):
         f"/api/pacientes/{paciente_id}/triagem/confirmar", json=_vitais(), headers=auth_headers
     )
     assert resp.status_code == 409
+
+
+def test_confirmar_com_queixa_persiste_no_prontuario(client, auth_headers, db_session):
+    paciente_id = _cadastrar_paciente(client, auth_headers)
+
+    client.post(
+        f"/api/pacientes/{paciente_id}/triagem/confirmar",
+        json=_vitais(queixa="Dor no peito"),
+        headers=auth_headers,
+    )
+
+    prontuario = db_session.query(Prontuario).filter_by(paciente_id=paciente_id).one()
+    assert prontuario.queixa == "Dor no peito"
+
+
+def test_confirmar_sem_queixa_mantem_nulo(client, auth_headers, db_session):
+    paciente_id = _cadastrar_paciente(client, auth_headers)
+
+    client.post(
+        f"/api/pacientes/{paciente_id}/triagem/confirmar", json=_vitais(), headers=auth_headers
+    )
+
+    prontuario = db_session.query(Prontuario).filter_by(paciente_id=paciente_id).one()
+    assert prontuario.queixa is None
+    triagem = db_session.query(Evolucao).filter_by(prontuario_id=prontuario.id, tipo="Triagem").one()
+    assert "sem queixa registrada" in triagem.descricao
