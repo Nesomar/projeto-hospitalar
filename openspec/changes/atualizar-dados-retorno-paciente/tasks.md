@@ -15,11 +15,11 @@
 
 ## 2. Frontend
 
-- [ ] 2.1 Em `api.js`, `abrirNovoAtendimento(token, pacienteId, dadosCadastrais)` envia o corpo quando
+- [x] 2.1 Em `api.js`, `abrirNovoAtendimento(token, pacienteId, dadosCadastrais)` envia o corpo quando
   informado.
-- [ ] 2.2 Em `CadastroScreen.jsx`, o cartão de retorno (sem atendimento ativo) exibe telefone e sexo
+- [x] 2.2 Em `CadastroScreen.jsx`, o cartão de retorno (sem atendimento ativo) exibe telefone e sexo
   preenchidos com os valores atuais, e "Abrir novo atendimento" envia os valores do formulário.
-- [ ] 2.3 Seguir o padrão visual existente (`s.input`, `s.field`, `s.label`), usando `frontend-design` +
+- [x] 2.3 Seguir o padrão visual existente (`s.input`, `s.field`, `s.label`), usando `frontend-design` +
   `ui-ux-pro-max`.
 
 ## 3. Validação e docs

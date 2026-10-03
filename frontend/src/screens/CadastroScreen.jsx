@@ -22,6 +22,7 @@ export default function CadastroScreen({ token, showToast, onCadastrado }) {
   const [enviando, setEnviando] = useState(false);
   // Paciente já cadastrado (CPF repetido): oferece abrir novo atendimento em vez de só mostrar o erro.
   const [retorno, setRetorno] = useState(null);
+  const [dadosRetorno, setDadosRetorno] = useState({ telefone: "", sexo: "" });
 
   function update(campo, valor) {
     setForm((f) => ({ ...f, [campo]: valor }));
@@ -66,7 +67,10 @@ export default function CadastroScreen({ token, showToast, onCadastrado }) {
   async function tratarCpfJaCadastrado(cpfDigits, mensagem) {
     try {
       const [paciente] = await buscarPacientePorCpf(token, cpfDigits);
-      if (paciente) setRetorno(paciente);
+      if (paciente) {
+        setRetorno(paciente);
+        setDadosRetorno({ telefone: paciente.telefone || "", sexo: paciente.sexo || "" });
+      }
       else showToast(mensagem); // conflito só de CNS: não há paciente por CPF
     } catch (e) {
       showToast(e.message || mensagem);
@@ -76,7 +80,11 @@ export default function CadastroScreen({ token, showToast, onCadastrado }) {
   async function onAbrirAtendimento() {
     setEnviando(true);
     try {
-      await abrirNovoAtendimento(token, retorno.id);
+      // Sexo vazio não é enviado: o backend só aceita F|M|O.
+      await abrirNovoAtendimento(token, retorno.id, {
+        telefone: dadosRetorno.telefone.trim() || undefined,
+        sexo: dadosRetorno.sexo || undefined,
+      });
       showToast("Novo atendimento aberto.");
       setRetorno(null);
       setForm(defaultForm());
@@ -103,9 +111,38 @@ export default function CadastroScreen({ token, showToast, onCadastrado }) {
             Paciente já está em atendimento.
           </div>
         ) : (
-          <div style={{ fontSize: 13.5, color: "oklch(40% 0.02 258)" }}>
-            O paciente retorna à unidade. Abra um novo atendimento para ele aguardar a triagem.
-          </div>
+          <>
+            <div style={{ fontSize: 13.5, color: "oklch(40% 0.02 258)" }}>
+              O paciente retorna à unidade. Revise os dados de contato e abra um novo atendimento para ele aguardar a triagem.
+            </div>
+            <div style={{ display: "flex", gap: 16 }}>
+              <div style={{ flex: 1, minWidth: 0, ...s.field }}>
+                <label htmlFor="retorno-telefone" style={s.label}>Telefone</label>
+                <input
+                  id="retorno-telefone"
+                  type="text"
+                  value={dadosRetorno.telefone}
+                  onChange={(e) => setDadosRetorno((d) => ({ ...d, telefone: e.target.value }))}
+                  placeholder="(00) 00000-0000"
+                  style={s.input}
+                />
+              </div>
+              <div style={{ flex: 1, minWidth: 0, ...s.field }}>
+                <label htmlFor="retorno-sexo" style={s.label}>Sexo</label>
+                <select
+                  id="retorno-sexo"
+                  value={dadosRetorno.sexo}
+                  onChange={(e) => setDadosRetorno((d) => ({ ...d, sexo: e.target.value }))}
+                  style={{ ...s.input, background: "#fff" }}
+                >
+                  <option value="">Não informado</option>
+                  <option value="F">Feminino</option>
+                  <option value="M">Masculino</option>
+                  <option value="O">Outro</option>
+                </select>
+              </div>
+            </div>
+          </>
         )}
         <div style={{ display: "flex", gap: 12 }}>
           {!retorno.atendimento_ativo && (
