@@ -2,6 +2,7 @@ from typing import Annotated, Callable
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
@@ -43,12 +44,18 @@ def get_prontuario_ativo(paciente_id: int, db: Session) -> Prontuario:
 
     prontuario = (
         db.query(Prontuario)
-        .filter(Prontuario.paciente_id == paciente_id, Prontuario.deleted_at.is_(None))
+        .filter(
+            Prontuario.paciente_id == paciente_id,
+            Prontuario.deleted_at.is_(None),
+            or_(Prontuario.status_atendimento.is_(None), Prontuario.status_atendimento != "alta"),
+        )
         .with_for_update()
         .first()
     )
     if prontuario is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Prontuário não encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Paciente não possui atendimento ativo"
+        )
     return prontuario
 
 

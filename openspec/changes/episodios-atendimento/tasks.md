@@ -1,20 +1,20 @@
 ## 0. Pré-requisito
 
-- [ ] 0.1 Confirmar que `tela-atendimento-medico` foi implementado, mergeado e arquivado: coluna `queixa`,
+- [x] 0.1 Confirmar que `tela-atendimento-medico` foi implementado, mergeado e arquivado: coluna `queixa`,
   `AtendimentoScreen` e response enriquecido presentes em `develop`.
 
 ## 1. Backend — integridade do atendimento ativo
 
-- [ ] 1.1 Criar a migração `0006_prontuario_ativo_unico` com o índice único parcial
+- [x] 1.1 Criar a migração `0006_prontuario_ativo_unico` com o índice único parcial
   `uq_prontuario_ativo_por_paciente` (`paciente_id` WHERE `deleted_at IS NULL AND status_atendimento IS
   DISTINCT FROM 'alta'`). O downgrade faz `drop_index`.
-- [ ] 1.2 Declarar o índice em `Prontuario.__table_args__` (`Index(..., unique=True,
+- [x] 1.2 Declarar o índice em `Prontuario.__table_args__` (`Index(..., unique=True,
   postgresql_where=...)`) para manter model e migração alinhados.
-- [ ] 1.3 Alterar `get_prontuario_ativo` (`deps.py`) para filtrar o episódio ativo. Sem episódio ativo,
+- [x] 1.3 Alterar `get_prontuario_ativo` (`deps.py`) para filtrar o episódio ativo. Sem episódio ativo,
   retorna 409 "Paciente não possui atendimento ativo".
-- [ ] 1.4 Alterar `consultar_prontuario` para usar o ativo ou o mais recente
+- [x] 1.4 Alterar `consultar_prontuario` para usar o ativo ou o mais recente
   (`order_by(data_criacao.desc(), id.desc())`).
-- [ ] 1.5 Rodar a suíte existente e ajustar só os testes que dependem de operar sobre paciente com alta,
+- [x] 1.5 Rodar a suíte existente e ajustar só os testes que dependem de operar sobre paciente com alta,
   documentando o motivo no teste.
 
 ## 2. Backend — retorno de paciente

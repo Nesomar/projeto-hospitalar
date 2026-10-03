@@ -1,10 +1,13 @@
-from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, Integer, Text
+from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, Index, Integer, Text, text
 from sqlalchemy.sql import func
 
 from app.core.database import Base
 
 CLASSIFICACOES_RISCO = ("vermelho", "laranja", "amarelo", "verde", "azul")
 STATUS_ATENDIMENTO = ("em_atendimento", "aguardando_exames", "alta")
+
+# Atendimento ativo = nao deletado e sem alta. Mesmo predicado na migracao 0006.
+_ATIVO = "deleted_at IS NULL AND (status_atendimento IS NULL OR status_atendimento <> 'alta')"
 
 
 class Prontuario(Base):
@@ -29,6 +32,16 @@ class Prontuario(Base):
     queixa = Column(Text, nullable=True)
 
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    __table_args__ = (
+        Index(
+            "uq_prontuario_ativo_por_paciente",
+            "paciente_id",
+            unique=True,
+            postgresql_where=text(_ATIVO),
+            sqlite_where=text(_ATIVO),
+        ),
+    )
 
 
 _STATUS_LABELS = {
